@@ -1,0 +1,17 @@
+{
+  "name": "metalsmith-permalinks",
+  "description": "A metalsmith plugin for permalinks.",
+  "repository": "git://github.com/segmentio/metalsmith-permalinks.git",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "dependencies": {
+    "substitute": "git://github.com/segmentio/substitute#0.0.1",
+    "slug-component": "~1.1.0"
+  },
+  "devDependencies": {
+    "mocha": "1.x",
+    "metalsmith": "0.x",
+    "assert-dir-equal": "0.0.1"
+  }
+}
