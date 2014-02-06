@@ -1,9 +1,14 @@
 
+var exec = require('child_process').exec;
 var equal = require('assert-dir-equal');
 var Metalsmith = require('metalsmith');
 var permalinks = require('..');
 
 describe('metalsmith-permalinks', function(){
+  before(function(done){
+    exec('rm -rf test/fixtures/*/build', done);
+  });
+
   it('should change files even with no pattern', function(done){
     Metalsmith('test/fixtures/no-pattern')
       .use(permalinks())
