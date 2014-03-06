@@ -30,4 +30,15 @@ describe('metalsmith-permalinks', function(){
       });
 
   });
+
+  it('should accepts a shorthand string', function(done){
+    Metalsmith('test/fixtures/shorthand')
+      .use(permalinks(':title'))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/shorthand/expected', 'test/fixtures/shorthand/build');
+        done();
+      });
+
+  });
 });
