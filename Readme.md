@@ -1,7 +1,7 @@
 
 # metalsmith-permalinks
 
-  A Metalsmith plugin for permalinks.
+  A Metalsmith plugin that applies a custom permalink pattern to files, and renames them so that they're nested properly for static sites (converting `about.html` into `about/index.html`).
 
 ## Installation
 
