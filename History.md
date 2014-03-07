@@ -1,4 +1,8 @@
 
+0.1.1 - March 7, 2013
+---------------------
+* fix `substitute` dependency
+
 0.1.0 - March 6, 2013
 ---------------------
 * add string shorthand
