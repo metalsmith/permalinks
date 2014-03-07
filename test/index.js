@@ -41,4 +41,24 @@ describe('metalsmith-permalinks', function(){
       });
 
   });
+
+  it('should copy relative files to maintain references', function(done){
+    Metalsmith('test/fixtures/relative')
+      .use(permalinks())
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/relative/expected', 'test/fixtures/relative/build');
+        done();
+      });
+  });
+
+  it('should copy relative files even with patterns', function(done){
+    Metalsmith('test/fixtures/relative-pattern')
+      .use(permalinks(':title'))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/relative-pattern/expected', 'test/fixtures/relative-pattern/build');
+        done();
+      });
+  });
 });
