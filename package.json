@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {
-    "substitute": "git://github.com/segmentio/substitute#0.0.1",
+    "substitute": "segmentio/substitute#0.0.1",
     "slug-component": "~1.1.0",
     "debug": "~0.7.4"
   },
