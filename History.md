@@ -1,4 +1,8 @@
 
+0.1.2 - March 10, 2013
+----------------------
+* remove `debugger` statement
+
 0.1.1 - March 7, 2013
 ---------------------
 * fix `substitute` dependency
