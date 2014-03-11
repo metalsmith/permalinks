@@ -1,4 +1,8 @@
 
+0.1.3 - March 11, 2013
+----------------------
+* `toString` replacements
+
 0.1.2 - March 10, 2013
 ----------------------
 * remove `debugger` statement
