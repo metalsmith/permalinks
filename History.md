@@ -1,4 +1,8 @@
 
+0.2.0 - March 11, 2013
+----------------------
+* add `date` option for rendering dates
+
 0.1.3 - March 11, 2013
 ----------------------
 * `toString` replacements
