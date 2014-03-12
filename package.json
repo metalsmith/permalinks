@@ -7,12 +7,12 @@
   "main": "lib/index.js",
   "dependencies": {
     "slug-component": "~1.1.0",
-    "strings": "~0.2.1",
-    "debug": "~0.7.4"
+    "debug": "~0.7.4",
+    "substitute": "git://github.com/segmentio/substitute#0.0.1",
+    "moment": "^2.5.1"
   },
   "devDependencies": {
     "mocha": "1.x",
     "metalsmith": "0.x",
-    "assert-dir-equal": "0.0.1"
-  }
+    "assert-dir-equal": "0.0.1"  }
 }

@@ -61,4 +61,29 @@ describe('metalsmith-permalinks', function(){
         done();
       });
   });
+
+  it('should format a date', function(done){
+    Metalsmith('test/fixtures/date')
+      .use(permalinks(':date'))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/date/expected', 'test/fixtures/date/build');
+        done();
+      });
+
+  });
+
+  it('should format a date with a custom formatter', function(done){
+    Metalsmith('test/fixtures/custom-date')
+      .use(permalinks({
+        pattern: ':date',
+        date: 'YYYY/MM'
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/custom-date/expected', 'test/fixtures/custom-date/build');
+        done();
+      });
+
+  });
 });

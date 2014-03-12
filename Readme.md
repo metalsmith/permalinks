@@ -23,7 +23,20 @@ var metalsmith = new Metalsmith(__dirname)
 
   If no pattern is provided, the files won't be remapped, but the `path` metadata key will still be set, so that you can use it for outputting links to files in the template.
 
-## CLI Usage
+#### Dates
+
+  By default any date will be converted to a `YYYY/MM/DD` format when using in a permalink pattern, but you can change the conversion by passing a `date` option:
+
+```js
+metalsmith.use(permalinks({
+  pattern: ':date/:title',
+  date: 'YYYY'
+}));
+```
+  
+  It uses [moment.js](http://momentjs.com/docs/#/displaying/format/) to format the string.
+
+#### CLI
 
   You can also use the plugin with the Metalsmith CLI by adding a key to your `metalsmith.json` file:
 
