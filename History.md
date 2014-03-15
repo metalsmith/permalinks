@@ -1,4 +1,8 @@
 
+0.2.1 - March 14, 2013
+----------------------
+* remove `debugger` statement
+
 0.2.0 - March 11, 2013
 ----------------------
 * add `date` option for rendering dates
