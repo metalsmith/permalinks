@@ -1,4 +1,8 @@
 
+0.2.2 - March 14, 2013
+----------------------
+* remove `debugger` statement, holy crap
+
 0.2.1 - March 14, 2013
 ----------------------
 * remove `debugger` statement
