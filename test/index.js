@@ -3,8 +3,6 @@ var exec = require('child_process').exec;
 var equal = require('assert-dir-equal');
 var Metalsmith = require('metalsmith');
 var permalinks = require('..');
-var exists = require('fs').existsSync;
-var assert = require('assert');
 
 describe('metalsmith-permalinks', function(){
   before(function(done){
