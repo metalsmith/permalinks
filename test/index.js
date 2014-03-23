@@ -3,6 +3,8 @@ var exec = require('child_process').exec;
 var equal = require('assert-dir-equal');
 var Metalsmith = require('metalsmith');
 var permalinks = require('..');
+var exists = require('fs').existsSync;
+var assert = require('assert');
 
 describe('metalsmith-permalinks', function(){
   before(function(done){
@@ -58,6 +60,16 @@ describe('metalsmith-permalinks', function(){
       .build(function(err){
         if (err) return done(err);
         equal('test/fixtures/relative-pattern/expected', 'test/fixtures/relative-pattern/build');
+        done();
+      });
+  });
+
+  it('should copy relative files once per output file', function(done){
+    Metalsmith('test/fixtures/relative-multiple')
+      .use(permalinks(':title'))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/relative-multiple/expected', 'test/fixtures/relative-multiple/build');
         done();
       });
   });
