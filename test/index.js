@@ -62,6 +62,16 @@ describe('metalsmith-permalinks', function(){
       });
   });
 
+  it('should copy relative files once per output file', function(done){
+    Metalsmith('test/fixtures/relative-multiple')
+      .use(permalinks(':title'))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/relative-multiple/expected', 'test/fixtures/relative-multiple/build');
+        done();
+      });
+  });
+
   it('should format a date', function(done){
     Metalsmith('test/fixtures/date')
       .use(permalinks(':date'))
