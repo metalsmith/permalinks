@@ -1,4 +1,9 @@
 
+0.3.0 - April 2, 2013
+---------------------
+* fix relative file copying
+* add option to turn off relative file copying
+
 0.2.2 - March 14, 2013
 ----------------------
 * remove `debugger` statement, holy crap
