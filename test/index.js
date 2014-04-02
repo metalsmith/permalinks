@@ -52,6 +52,18 @@ describe('metalsmith-permalinks', function(){
       });
   });
 
+  it('should not copy relative files', function(done){
+    Metalsmith('test/fixtures/no-relative')
+      .use(permalinks({
+        relative: false
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/no-relative/expected', 'test/fixtures/no-relative/build');
+        done();
+      });
+  }
+
   it('should copy relative files even with patterns', function(done){
     Metalsmith('test/fixtures/relative-pattern')
       .use(permalinks(':title'))

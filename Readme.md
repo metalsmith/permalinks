@@ -36,6 +36,48 @@ metalsmith.use(permalinks({
   
   It uses [moment.js](http://momentjs.com/docs/#/displaying/format/) to format the string.
 
+#### Relative linking
+
+  By default sibling files and directories of a permalinked html file will be
+  copied into the new permalink directory. This is an example of a ```src``` 
+  and ```build``` directories with relative file copying.
+
+```
+$ ls -R src/
+post.html css
+
+src/css:
+style.css
+
+$ ls -R build/
+post css
+
+build/post:
+index.html css
+
+build/post/css:
+style.css
+
+build/css:
+style.css
+```
+
+  To disable this behaviour, you may pass ```relative: false``` in the options.
+  The resulting build directory with ```relative: false``` would look like 
+  this:
+
+```
+$ ls -R build/
+post css
+
+build/post:
+index.html
+
+build/css:
+style.css
+```
+
+
 #### CLI
 
   You can also use the plugin with the Metalsmith CLI by adding a key to your `metalsmith.json` file:
