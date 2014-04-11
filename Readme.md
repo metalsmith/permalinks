@@ -65,6 +65,10 @@ metalsmith.use(permalinks({
       css/
         style.css
 
+#### Symlinks
+
+  If disk space or build times are a concern for your project, you may set the ```symlinks``` option to ```true```. This will create symlinks for relative files instead of copying them.
+
 #### CLI
 
   You can also use the plugin with the Metalsmith CLI by adding a key to your `metalsmith.json` file:
