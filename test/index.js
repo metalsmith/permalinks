@@ -74,6 +74,18 @@ describe('metalsmith-permalinks', function(){
       });
   });
 
+  it('should create symlinks for relative files', function(done){
+    Metalsmith('test/fixtures/symlinks')
+      .use(permalinks({
+        symlinks: true
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/symlinks/expected', 'test/fixtures/symlinks/build');
+        done();
+      });
+  }
+
   it('should copy relative files once per output file', function(done){
     Metalsmith('test/fixtures/relative-multiple')
       .use(permalinks(':title'))
