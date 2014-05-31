@@ -12,8 +12,9 @@
     "moment": "^2.5.1"
   },
   "devDependencies": {
-    "mocha": "1.x",
+    "assert-dir-equal": "0.0.1",
     "metalsmith": "0.x",
-    "assert-dir-equal": "0.0.1"
+    "mocha": "1.x",
+    "rimraf": "^2.2.8"
   }
 }

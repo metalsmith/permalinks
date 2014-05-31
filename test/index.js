@@ -1,12 +1,13 @@
 
-var exec = require('child_process').exec;
+var rimraf = require('rimraf');
+var assert = require('assert');
 var equal = require('assert-dir-equal');
 var Metalsmith = require('metalsmith');
 var permalinks = require('..');
 
 describe('metalsmith-permalinks', function(){
   before(function(done){
-    exec('rm -rf test/fixtures/*/build', done);
+    rimraf('test/fixtures/*/build', done);
   });
 
   it('should change files even with no pattern', function(done){
@@ -62,7 +63,7 @@ describe('metalsmith-permalinks', function(){
         equal('test/fixtures/no-relative/expected', 'test/fixtures/no-relative/build');
         done();
       });
-  }
+  });
 
   it('should copy relative files even with patterns', function(done){
     Metalsmith('test/fixtures/relative-pattern')
@@ -105,6 +106,22 @@ describe('metalsmith-permalinks', function(){
         if (err) return done(err);
         equal('test/fixtures/custom-date/expected', 'test/fixtures/custom-date/build');
         done();
+      });
+
+  });
+
+  it('should replace any backslashes in paths with slashes', function(done){
+    Metalsmith('test/fixtures/backslashes')
+      .use(permalinks())
+      .use(function (files, metalsmith, pluginDone) {
+        Object.keys(files).forEach(function(file){
+          assert.equal(files[file].path.indexOf('\\'), -1);
+        });
+        pluginDone();
+        done();
+      })
+      .build(function(err){
+        if (err) return done(err);
       });
 
   });
