@@ -2,7 +2,7 @@
   "name": "metalsmith-permalinks",
   "description": "A metalsmith plugin for permalinks.",
   "repository": "git://github.com/segmentio/metalsmith-permalinks.git",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {
