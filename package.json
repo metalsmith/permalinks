@@ -8,7 +8,7 @@
   "dependencies": {
     "slug-component": "~1.1.0",
     "debug": "~0.7.4",
-    "substitute": "git://github.com/segmentio/substitute#0.0.1",
+    "substitute": "https://github.com/segmentio/substitute/archive/0.0.1.tar.gz",
     "moment": "^2.5.1"
   },
   "devDependencies": {
