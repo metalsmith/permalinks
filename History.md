@@ -1,4 +1,8 @@
 
+0.3.2 - June 11, 2014
+---------------------
+* fix installing `substitute` dependency
+
 0.3.1 - June 2, 2014
 --------------------
 * fix backslashes in permalinks on windows
