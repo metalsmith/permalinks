@@ -125,4 +125,14 @@ describe('metalsmith-permalinks', function(){
       });
 
   });
+
+  it('should ignore any files with permalink equal to false option', function(done){
+    Metalsmith('test/fixtures/false-permalink')
+      .use(permalinks(':title'))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/false-permalink/expected', 'test/fixtures/false-permalink/build');
+        done();
+      });
+  });
 });
