@@ -1,4 +1,8 @@
 
+0.4.0 - September 2, 2014
+-------------------------
+* add `permalink: false` option to disable permalinking
+
 0.3.2 - June 11, 2014
 ---------------------
 * fix installing `substitute` dependency
