@@ -135,4 +135,33 @@ describe('metalsmith-permalinks', function(){
         done();
       });
   });
+
+  it('should ignore any files with an extension different than the given extension option', function(done){
+    Metalsmith('test/fixtures/extension-option')
+      .use(permalinks({
+        extension: ".jade",
+        relative: false
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/extension-option/expected', 'test/fixtures/extension-option/build');
+        done();
+      });
+  });
+
+  it('should only generate and store the paths in the file\'s metadata with the onlyGenPaths option', function(done){
+    Metalsmith('test/fixtures/only-gen-paths')
+      .use(permalinks({
+        onlyGenPaths: true
+      }))
+      .use(function(files, metalsmith, done) {
+        assert.equal(files["test.html"].path, "test");
+        done();
+      })
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/only-gen-paths/expected', 'test/fixtures/only-gen-paths/build');
+        done();
+      });
+  });
 });
