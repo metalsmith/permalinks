@@ -33,7 +33,7 @@ metalsmith.use(permalinks({
   date: 'YYYY'
 }));
 ```
-  
+
   It uses [moment.js](http://momentjs.com/docs/#/displaying/format/) to format the string.
 
 #### Relative Files
@@ -64,6 +64,21 @@ metalsmith.use(permalinks({
         index.html
       css/
         style.css
+
+#### Skipping Permalinks for a file
+
+  A file can be ignored by the metalsmith-permalinks plugin if you pass the `permalink: false` option to the yaml metadata of a file.
+  This is useful for hosting a static site on AWS S3, where there is a top level `error.html` file and not an `error/index.html` file.
+
+  For example, in your error.md file:
+
+  ```js
+  ---
+  template: error.html
+  title: error
+  permalink: false
+  ---
+  ```
 
 #### CLI
 
