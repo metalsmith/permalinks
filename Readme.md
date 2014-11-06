@@ -80,6 +80,20 @@ metalsmith.use(permalinks({
   ---
   ```
 
+  Another way to make metalsmith-permalinks ignore a file is by grouping the files you want metalsmith-permalinks to generate permalinks
+  for into a collection, using `metalsmith-collections`, then tell metalsmith-permalinks to *only* do permalinks for files in that collection:
+
+  E.g.:
+
+  ```js
+var metalsmith = new Metalsmith(__dirname)
+  .use(permalinks({
+    pattern: ':title',
+    collection: 'posts'
+}));
+  ```
+  using a `metalsmith` instance passing the option above will cause `metalsmith-permalinks` to skip any file not in that collection.
+
 #### CLI
 
   You can also use the plugin with the Metalsmith CLI by adding a key to your `metalsmith.json` file:

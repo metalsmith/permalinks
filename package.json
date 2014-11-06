@@ -14,6 +14,7 @@
   "devDependencies": {
     "assert-dir-equal": "0.0.1",
     "metalsmith": "0.x",
+    "metalsmith-collections": "^0.6.0",
     "mocha": "1.x",
     "rimraf": "^2.2.8"
   }

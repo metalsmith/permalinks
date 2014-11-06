@@ -4,6 +4,7 @@ var assert = require('assert');
 var equal = require('assert-dir-equal');
 var Metalsmith = require('metalsmith');
 var permalinks = require('..');
+var collections = require('metalsmith-collections');
 
 describe('metalsmith-permalinks', function(){
   before(function(done){
@@ -134,5 +135,30 @@ describe('metalsmith-permalinks', function(){
         equal('test/fixtures/false-permalink/expected', 'test/fixtures/false-permalink/build');
         done();
       });
+  });
+
+  it('should ignore files not in a collection', function(done){
+    Metalsmith('test/fixtures/collections')
+      .use(collections({
+        posts: {
+          pattern: 'in_collection.html'
+        }
+      }))
+      .use(permalinks({
+          pattern: ':title',
+          collection: 'posts'
+      }))
+      .use(function (files, metalsmith, done) {
+          assert.equal(2, Object.keys(files).length);
+          assert.equal(true, 'not_in_collection.html' in files);
+          assert.equal(true, 'in-collection/index.html' in files);
+          done();
+      })
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/pattern/expected', 'test/fixtures/pattern/build');
+        done();
+      });
+
   });
 });
