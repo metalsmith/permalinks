@@ -135,4 +135,16 @@ describe('metalsmith-permalinks', function(){
         done();
       });
   });
+
+  it('should replace any german umlauts when using titles in pattern', function(done){
+    Metalsmith('test/fixtures/umlauts')
+      .use(permalinks(':title'))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/umlauts/expected', 'test/fixtures/umlauts/build');
+        done();
+      });
+
+  });
+
 });
