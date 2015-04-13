@@ -135,4 +135,33 @@ describe('metalsmith-permalinks', function(){
         done();
       });
   });
+
+  it('should use the resolve path for false values (not root)', function (done) {
+    Metalsmith('test/fixtures/falsy')
+      .use(permalinks(':falsy/:title'))
+      .use(function (files, metalsmith, pluginDone) {
+        Object.keys(files).forEach(function (file) {
+         assert.notEqual(files[file].path.charAt(0), '/');
+        });
+        done();
+      })
+      .build(function (err) {
+        if (err) return done(err);
+      });
+  });
+
+
+  it('should use the resolve path for empty arrays (not root)', function (done) {
+    Metalsmith('test/fixtures/empty-array')
+      .use(permalinks(':array/:title'))
+      .use(function (files, metalsmith, pluginDone) {
+        Object.keys(files).forEach(function (file) {
+         assert.notEqual(files[file].path.charAt(0), '/');
+        });
+        done();
+      })
+      .build(function (err) {
+        if (err) return done(err);
+      });
+  });
 });
