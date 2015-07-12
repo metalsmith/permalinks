@@ -9,9 +9,9 @@
     "test": "node_modules/.bin/_mocha --reporter spec"
   },
   "dependencies": {
-    "slug-component": "~1.1.0",
     "debug": "~2.2.0",
     "moment": "^2.10.3",
+    "slug": "^0.9.1",
     "substitute": "https://github.com/segmentio/substitute/archive/0.0.1.tar.gz"
   },
   "devDependencies": {

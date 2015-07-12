@@ -136,4 +136,20 @@ describe('metalsmith-permalinks', function(){
       });
   });
 
+  it('should accept options for slug module', function(done){
+    Metalsmith('test/fixtures/slug-options')
+      .use(permalinks({
+        pattern: ':title',
+        slug: {
+          remove: /[.]/g,
+          lower: false
+        }
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/slug-options/expected', 'test/fixtures/slug-options/build');
+        done();
+      });
+  });
+
 });
