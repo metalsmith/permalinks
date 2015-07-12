@@ -80,6 +80,22 @@ metalsmith.use(permalinks({
   ---
   ```
 
+#### Slug Options
+
+  [slug](https://www.npmjs.com/package/slug) is used for slugifying strings and it's set to RFC3986 mode by default.
+
+  You can pass custom [slug options](https://www.npmjs.com/package/slug#options):
+
+```js
+metalsmith.use(permalinks({
+  slug: {
+    mode: 'pretty',
+    lower: true
+  }
+}));
+```
+
+
 #### CLI
 
   You can also use the plugin with the Metalsmith CLI by adding a key to your `metalsmith.json` file:
