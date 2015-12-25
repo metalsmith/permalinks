@@ -23,6 +23,30 @@ var metalsmith = new Metalsmith(__dirname)
 
   If no pattern is provided, the files won't be remapped, but the `path` metadata key will still be set, so that you can use it for outputting links to files in the template.
 
+  The `pattern` can also be a set as such:
+
+```js
+var Metalsmith = require('metalsmith');
+var permalinks = require('metalsmith-permalinks');
+
+var metalsmith = new Metalsmith(__dirname)
+  .use(permalinks({
+      // original options would act as the keys of a `default` linkset, 
+      pattern: ':title',
+      date: 'YYYY',
+
+      // each linkset defines a match, and any other desired option
+      linksets: [{
+          match: { collection: 'blogposts' },
+          pattern: 'blog/:date/:title',
+          date: 'mmddyy'
+      },{
+          match: { collection: 'pages' },
+          pattern: 'pages/:title'
+      }]
+  }));
+```
+
 #### Dates
 
   By default any date will be converted to a `YYYY/MM/DD` format when using in a permalink pattern, but you can change the conversion by passing a `date` option:
