@@ -135,4 +135,23 @@ describe('metalsmith-permalinks', function(){
         done();
       });
   });
+
+  it('should match arbitrary metadata', function(done) {
+    Metalsmith('test/fixtures/simple-linksets')
+      .use(permalinks({
+        linksets: [{
+          match: { foo: 34 },
+          pattern: 'foo/:title'
+        },{
+          match: { bar: 21 },
+          pattern: 'bar/:title'
+        }]
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/simple-linksets/expected', 'test/fixtures/simple-linksets/build');
+        done();
+      });
+  });
+
 });
