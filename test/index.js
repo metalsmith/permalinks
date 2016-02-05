@@ -153,5 +153,44 @@ describe('metalsmith-permalinks', function(){
         done();
       });
   });
+ 
+  it('should use slug-component by defaults', function(done){
+    // test building of filenames
+    Metalsmith('test/fixtures/slug-component')
+      .use(permalinks({
+        pattern:':title'
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/slug-component/expected', 'test/fixtures/slug-component/build');
+        done();
+      });
+  });
+  it('should use slug-component if explicitly specified', function(done){
+    // test building of filenames
+    Metalsmith('test/fixtures/slug-component1')
+      .use(permalinks({
+        pattern:':title',
+        slug:require('slug-component')
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/slug-component1/expected', 'test/fixtures/slug-component1/build');
+        done();
+      });
+  });
+  it('should use slug custom', function(done){
+    // test building of filenames
+    Metalsmith('test/fixtures/slug-custom')
+      .use(permalinks({
+        pattern:':title',
+        slug: require('transliteration').slugify
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/slug-custom/expected', 'test/fixtures/slug-custom/build');
+        done();
+      });
+  });
 
 });

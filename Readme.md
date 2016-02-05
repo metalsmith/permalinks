@@ -60,6 +60,20 @@ metalsmith.use(permalinks({
 
   It uses [moment.js](http://momentjs.com/docs/#/displaying/format/) to format the string.
 
+#### Custom 'slug' function
+  
+  If you do not like filenames, you can replace slug function.
+  For now only js version of syntax is supported and tested.
+
+```js
+
+metalsmith.use(permalinks({
+ pattern:':title',
+ slug: require('transliteration').slugify
+}))
+```
+  There are plenty on npm for transliteration and slugs. <https://www.npmjs.com/browse/keyword/transliteration>, better than default slug-component.
+
 #### Relative Files
 
   When this plugin rewrites your files to be permalinked properly, it will also duplicate sibling files so that relative links like `/images/cat.gif` will be preserved nicely. You can turn this feature off by setting the `relative` option to `false`.
