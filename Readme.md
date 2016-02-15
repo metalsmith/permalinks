@@ -1,5 +1,5 @@
 
-# metalsmith-permalinks
+# metalsmith-permalinks [![npm](https://img.shields.io/npm/v/metalsmith-permalinks.svg?style=flat-square)](https://www.npmjs.com/package/metalsmith-permalinks) [![Travis](https://img.shields.io/travis/segmentio/metalsmith-permalinks.svg?style=flat-square)](https://travis-ci.org/segmentio/metalsmith-permalinks)
 
   A Metalsmith plugin that applies a custom permalink pattern to files, and renames them so that they're nested properly for static sites (converting `about.html` into `about/index.html`).
 
