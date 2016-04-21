@@ -250,4 +250,24 @@ describe('metalsmith-permalinks', () => {
         done();
       });
   });
+
+  it('should format a linkset date with a custom formatter', function(done) {
+    Metalsmith('test/fixtures/linkset-custom-date')
+      .use(permalinks({
+        linksets: [{
+          match: { foo: 34 },
+          pattern: 'foo/:date/:title',
+          date: 'YYYY/MM/DD'
+        },{
+          match: { bar: 21 },
+          pattern: 'bar/:date/:title',
+          date: 'YYYY/MM'
+        }]
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/linkset-custom-date/expected', 'test/fixtures/linkset-custom-date/build');
+        done();
+      });
+  });
 });
