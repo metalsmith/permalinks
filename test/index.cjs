@@ -82,6 +82,21 @@ const fixtures = [
     }
   },
   {
+    message: 'should format a linkset date with a custom formatter',
+    folder: 'linkset-custom-date',
+    options: {
+      linksets: [{
+        match: { foo: 34 },
+        pattern: 'foo/:date/:title',
+        date: 'YYYY/MM/DD'
+      }, {
+        match: { bar: 21 },
+        pattern: 'bar/:date/:title',
+        date: 'YYYY/MM'
+      }]
+    }
+  },
+  {
     message: 'should match arbitrary metadata',
     folder: 'simple-linksets',
     options: {
@@ -219,11 +234,16 @@ describe('@metalsmith/permalinks', () => {
     const basePath = path.join(fixturesBase, folder)
     it(message, (done) => {
       Metalsmith(basePath)
+        .env('DEBUG', process.env.DEBUG)
         .use(permalinks(options))
         .build((err) => {
-          if (err) return done(err)
-          equal(path.join(basePath, 'expected'), path.join(basePath, 'build'))
-          done()
+          if (err) done(err)
+          try {
+            equal(path.join(basePath, 'expected'), path.join(basePath, 'build'))
+            done()
+          } catch (err) {
+            done(err)
+          }
         })
     })
   })

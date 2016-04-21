@@ -59,6 +59,13 @@ const defaultOptions = {
   linksets: []
 }
 
+const defaultLinkset = {
+  date: 'YYYY/MM/DD',
+  slug: { lower: true },
+  relative: true,
+  isDefault: false
+}
+
 /**
  * Maps the slugify function to slug to maintain compatibility
  *
@@ -110,6 +117,15 @@ const html = (str) => path.extname(str) === '.html'
  */
 const format = (string) => (date) => moment(date).utc().format(string)
 
+const normalizeLinkset = (linkset) => {
+  linkset = Object.assign({}, defaultLinkset, linkset)
+  linkset.date = format(linkset.date)
+  if (typeof linkset.slug !== 'function') {
+    linkset.slug = slugFn(linkset.slug)
+  }
+  return linkset
+}
+
 /**
  * Normalize an options argument.
  *
@@ -120,11 +136,11 @@ const normalizeOptions = (options) => {
   if (typeof options === 'string') {
     options = { pattern: options }
   }
-  options = Object.assign({}, defaultOptions, options)
-  options.date = format(options.date)
-  if (typeof options.slug !== 'function') {
-    options.slug = slugFn(options.slug)
+  options = normalizeLinkset(Object.assign({}, defaultOptions, options))
+  if (Array.isArray(options.linksets)) {
+    options.linksets = options.linksets.map(normalizeLinkset)
   }
+
   return options
 }
 
@@ -314,7 +330,8 @@ function permalinks(options) {
         const data = files[file]
         debug('checking file: %s', file)
 
-        const linkset = Object.assign({}, defaultLinkset, findLinkset(data))
+        const linkset = findLinkset(data)
+
         debug('applying pattern: %s to file: %s', linkset.pattern, file)
 
         let ppath = replace(linkset.pattern, data, linkset) || resolve(file)
@@ -364,7 +381,6 @@ function permalinks(options) {
     Object.keys(dupes).forEach((dupe) => {
       files[dupe] = dupes[dupe]
     })
-
     done()
   }
 }
