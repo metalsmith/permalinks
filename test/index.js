@@ -154,4 +154,16 @@ describe('metalsmith-permalinks', function(){
       });
   });
 
+  it('should split pattern parts by slash', function(done) {
+    Metalsmith('test/fixtures/slash-slugs')
+      .use(permalinks({
+        pattern: ':slug'
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/slash-slugs/expected', 'test/fixtures/slash-slugs/build');
+        done();
+      });
+  });
+
 });
