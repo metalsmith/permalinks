@@ -166,4 +166,17 @@ describe('metalsmith-permalinks', function(){
       });
   });
 
+  it('should allow index.html', function(done) {
+    Metalsmith('test/fixtures/index-html')
+      .use(permalinks({
+        pattern: ':slug',
+        relative: false
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/index-html/expected', 'test/fixtures/index-html/build');
+        done();
+      });
+  });
+
 });
