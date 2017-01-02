@@ -126,6 +126,26 @@ describe('metalsmith-permalinks', function(){
 
   });
 
+  it('should transliterate path', function(done){
+    Metalsmith('test/fixtures/transliteration')
+      .use(permalinks({ transliteration: true }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/transliteration/expected', 'test/fixtures/transliteration/build');
+        done();
+      });
+  });
+
+  it('should transliterate path with pattern', function(done){
+    Metalsmith('test/fixtures/transliteration-pattern')
+      .use(permalinks({ transliteration: true, pattern: ':title' }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/transliteration-pattern/expected', 'test/fixtures/transliteration-pattern/build');
+        done();
+      });
+  });
+
   it('should ignore any files with permalink equal to false option', function(done){
     Metalsmith('test/fixtures/false-permalink')
       .use(permalinks(':title'))

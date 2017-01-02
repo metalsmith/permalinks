@@ -9,10 +9,11 @@
     "test": "mocha"
   },
   "dependencies": {
-    "slug-component": "~1.1.0",
     "debug": "~0.7.4",
+    "moment": "^2.5.1",
+    "slug-component": "~1.1.0",
     "substitute": "https://github.com/segmentio/substitute/archive/0.0.1.tar.gz",
-    "moment": "^2.5.1"
+    "transliteration": "^1.2.1"
   },
   "devDependencies": {
     "assert-dir-equal": "0.0.1",
