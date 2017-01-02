@@ -31,7 +31,7 @@ var permalinks = require('metalsmith-permalinks');
 
 var metalsmith = new Metalsmith(__dirname)
   .use(permalinks({
-      // original options would act as the keys of a `default` linkset, 
+      // original options would act as the keys of a `default` linkset,
       pattern: ':title',
       date: 'YYYY',
 
@@ -88,6 +88,9 @@ metalsmith.use(permalinks({
         index.html
       css/
         style.css
+
+#### Transliteration
+  When non-ASCII caracters (for example cyrillic) used for permalinks generation, they could be transliterated. You can turn this feature off by setting the `transliteration` option to `true`.
 
 #### Skipping Permalinks for a file
 
