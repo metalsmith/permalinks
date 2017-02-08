@@ -85,6 +85,19 @@ describe('metalsmith-permalinks', function(){
       });
   });
 
+  it('should flatten copied relative files', function(done){
+    Metalsmith('test/fixtures/flatten')
+      .use(permalinks({
+        pattern: ':title',
+        flatten: true
+      }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/flatten/expected', 'test/fixtures/flatten/build');
+        done();
+      });
+  });
+
   it('should format a date', function(done){
     Metalsmith('test/fixtures/date')
       .use(permalinks(':date'))

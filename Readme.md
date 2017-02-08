@@ -89,6 +89,45 @@ metalsmith.use(permalinks({
       css/
         style.css
 
+#### Deleting original subdirectories
+
+  If you have `relative` option enabled, and your directory names do not match the folder name outputted based on the `pattern` parameter,
+  you will end up with a folder of the original child assets, as well as duplicates in the renamed folder.
+
+  `flatten` is off by default, and only works if `relative` is on. It also does not work on files at the root directory level.
+
+  For example for this source directory:
+
+    src/
+      entries/
+        article/
+          content.html
+          supportingImage.jpg
+
+  Here's what the build directory would look like with `pattern: ':date/:title'`, and `flatten` off:
+
+    build/
+      entries/
+        article/
+          supportingImage.jpg
+        2017/
+          02/
+            08/
+              article/
+                index.html
+                supportingImage.jpg
+
+  And here's with `flatten` on:
+
+      build/
+        entries/
+          2017/
+            02/
+              08/
+                article/
+                  index.html
+                  supportingImage.jpg
+
 #### Skipping Permalinks for a file
 
   A file can be ignored by the metalsmith-permalinks plugin if you pass the `permalink: false` option to the yaml metadata of a file.
