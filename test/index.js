@@ -53,6 +53,16 @@ describe('metalsmith-permalinks', function(){
       });
   });
 
+  it('should move relative files', function(done){
+    Metalsmith('test/fixtures/relative-move')
+      .use(permalinks({pattern: 'foo', move: true}))
+      .build(function (err) {
+        if (err) return done(err);
+        equal('test/fixtures/relative-move/expected', 'test/fixtures/relative-move/build');
+        done();
+      });
+  });
+
   it('should not copy relative files', function(done){
     Metalsmith('test/fixtures/no-relative')
       .use(permalinks({
@@ -91,6 +101,18 @@ describe('metalsmith-permalinks', function(){
       .build(function (err) {
         if (err) return done(err);
         equal('test/fixtures/relative-folder/expected', 'test/fixtures/relative-folder/build');
+        done();
+      });
+  });
+
+  it('should move files in sibling folder', function(done){
+    Metalsmith('test/fixtures/relative-folder-move')
+      .use(permalinks({
+        relative: 'folder', pattern: 'foo', move: true
+      }))
+      .build(function (err) {
+        if (err) return done(err);
+        equal('test/fixtures/relative-folder-move/expected', 'test/fixtures/relative-folder-move/build');
         done();
       });
   });
