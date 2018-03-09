@@ -32,6 +32,17 @@ describe('metalsmith-permalinks', function(){
 
   });
 
+  it('should replace a dot noteated pattern', function(done){
+    Metalsmith('test/fixtures/pattern')
+      .use(permalinks({ pattern: ':series.name' }))
+      .build(function(err){
+        if (err) return done(err);
+        equal('test/fixtures/pattern/expected', 'test/fixtures/pattern/build');
+        done();
+      });
+
+  });
+
   it('should accepts a shorthand string', function(done){
     Metalsmith('test/fixtures/shorthand')
       .use(permalinks(':title'))
