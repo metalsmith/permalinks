@@ -104,6 +104,20 @@ metalsmith.use(permalinks({
   ---
   ```
 
+#### Overriding the permalink for a file
+
+  Using the `permalink` property in a file's front-matter, its permalink can be overridden. This can be useful for transferring
+  projects over to Metalsmith where pages don't follow a strict permalink system.
+
+  For example, in one of your pages:
+
+```js
+---
+title: My Post
+permalink: "posts/my-post"
+---
+```
+
 #### CLI
 
   You can also use the plugin with the Metalsmith CLI by adding a key to your `metalsmith.json` file:
