@@ -1,7 +1,12 @@
-
 # metalsmith-permalinks
 
-  A Metalsmith plugin that applies a custom permalink pattern to files, and renames them so that they're nested properly for static sites (converting `about.html` into `about/index.html`).
+[![npm version][npm-badge]][npm-url]
+[![code style: prettier][prettier-badge]][prettier-url]
+[![metalsmith: plugin][metalsmith-badge]][metalsmith-url]
+
+[![Build Status][travis-badge]][travis-url]
+
+A Metalsmith plugin that applies a custom permalink pattern to files, and renames them so that they're nested properly for static sites (converting `about.html` into `about/index.html`).
 
 ## Installation
 
@@ -135,3 +140,13 @@ permalink: "posts/my-post"
 ## License
 
   MIT
+
+[npm-badge]: https://img.shields.io/npm/v/metalsmith-permalinks.svg
+[npm-url]: https://www.npmjs.com/package/metalsmith-permalinks
+[travis-badge]: https://travis-ci.org/segmentio/metalsmith-permalinks.svg?branch=master
+[travis-url]: https://travis-ci.org/segmentio/metalsmith-permalinks
+[prettier-badge]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg
+[prettier-url]: https://github.com/prettier/prettier
+
+[metalsmith-badge]: https://img.shields.io/badge/metalsmith-plugin-green.svg?longCache=true
+[metalsmith-url]: http://metalsmith.io
