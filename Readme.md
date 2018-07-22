@@ -93,6 +93,21 @@ metalsmith.use(permalinks({
         index.html
       css/
         style.css
+        
+  `relative` can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
+  
+  For example using the `folder` strategy with this source directory:
+  
+    src/
+      post.html
+      post/
+        image.jpg
+        
+  Here's what the build directory would look like with `relative` set to `folder`:
+  
+    build/
+        index.html
+        image.jpg
 
 #### Skipping Permalinks for a file
 
