@@ -6,7 +6,7 @@
 
 [![Build Status][travis-badge]][travis-url]
 
-A Metalsmith plugin that applies a custom permalink pattern to files, and renames them so that they're nested properly for static sites (converting `about.html` into `about/index.html`).
+  A Metalsmith plugin that applies a custom permalink pattern to files, and renames them so that they're nested properly for static sites (converting `about.html` into `about/index.html`).
 
 ## Installation
 
@@ -108,6 +108,21 @@ metalsmith.use(permalinks({
   permalink: false
   ---
   ```
+
+#### Slug Options
+
+[slug](https://www.npmjs.com/package/slug) is used for slugifying strings and it's set to RFC3986 mode by default.
+
+You can pass custom [slug options](https://www.npmjs.com/package/slug#options):
+
+```js
+metalsmith.use(permalinks({
+  slug: {
+    mode: 'pretty',
+    lower: true
+  }
+}));
+```
 
 #### Overriding the permalink for a file
 
