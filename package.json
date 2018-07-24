@@ -28,6 +28,7 @@
     "mocha": "^5.2.0",
     "nodemon": "^1.18.3",
     "prettier": "^1.13.7",
-    "rimraf": "^2.4.1"
+    "rimraf": "^2.4.1",
+    "transliteration": "^1.6.5"
   }
 }

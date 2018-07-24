@@ -184,6 +184,57 @@ describe('metalsmith-permalinks', function() {
       });
   });
 
+  it('should use slug by defaults', function(done) {
+    // test building of filenames
+    Metalsmith('test/fixtures/slug')
+      .use(
+        permalinks({
+          pattern: ':title'
+        })
+      )
+      .build(function(err) {
+        if (err) return done(err);
+        equal('test/fixtures/slug/expected', 'test/fixtures/slug/build');
+        done();
+      });
+  });
+  it('should use custom slug config if specified', function(done) {
+    // test building of filenames
+    Metalsmith('test/fixtures/slug-custom')
+      .use(
+        permalinks({
+          pattern: ':title',
+          slug: { mode: 'pretty', lower: true }
+        })
+      )
+      .build(function(err) {
+        if (err) return done(err);
+        equal(
+          'test/fixtures/slug-custom/expected',
+          'test/fixtures/slug-custom/build'
+        );
+        done();
+      });
+  });
+  it('should use custom slug function', function(done) {
+    // test building of filenames
+    Metalsmith('test/fixtures/slug-custom-function')
+      .use(
+        permalinks({
+          pattern: ':title',
+          slug: require('transliteration').slugify
+        })
+      )
+      .build(function(err) {
+        if (err) return done(err);
+        equal(
+          'test/fixtures/slug-custom-function/expected',
+          'test/fixtures/slug-custom-function/build'
+        );
+        done();
+      });
+  });
+
   it('should use the resolve path for false values (not root)', function(done) {
     Metalsmith('test/fixtures/falsy')
       .use(permalinks(':falsy/:title'))
