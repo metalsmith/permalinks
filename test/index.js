@@ -104,7 +104,7 @@ describe('metalsmith-permalinks', function() {
 
   it('should copy files in sibling folder', function(done) {
     Metalsmith('test/fixtures/relative-folder')
-      .use(permalinks({relative: 'folder'}))
+      .use(permalinks({ relative: 'folder' }))
       .build(function(err) {
         if (err) return done(err);
         equal(
@@ -115,7 +115,7 @@ describe('metalsmith-permalinks', function() {
       });
   });
 
-  it('should format a date', function(done){
+  it('should format a date', function(done) {
     Metalsmith('test/fixtures/date')
       .use(permalinks(':date'))
       .build(function(err) {
