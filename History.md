@@ -1,4 +1,15 @@
-1.0.0 - September 6, 2018
+- Migrated to slugify to fix security issues - slug options changed slightly
+- Tests added
+
+  2.0.0 - October 15, 2018
+
+---
+
+- Published latest version and fixed API by releasing v1
+
+  1.0.0 - September 6, 2018
+
+---
 
 - Published latest version and fixed API by releasing v1
 
