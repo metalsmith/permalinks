@@ -217,7 +217,7 @@ describe('metalsmith-permalinks', function() {
       .use(
         permalinks({
           pattern: ':title',
-          slug: { mode: 'pretty', lower: true }
+          slug: { remove: /[*+~.()'"!:@=]+/g, lower: true }
         })
       )
       .build(function(err) {
