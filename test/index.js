@@ -127,7 +127,6 @@ const fixtures = [
       }
     }
   },
-
   {
     message: 'should accept options for slug module and create paths',
     folder: 'slug-options-path',
@@ -136,6 +135,30 @@ const fixtures = [
       slug: {
         remove: /[.]/g
       }
+    }
+  },
+  {
+    message: 'should make urls unique',
+    folder: 'unique-urls',
+    options: {
+      pattern: ':title',
+      unique: true
+    }
+  },
+  {
+    message: 'should allow a custom function for unique urls',
+    folder: 'unique-function',
+    options: {
+      unique: (targetPath, files) => {
+        let target;
+        let postfix = '';
+        do {
+          target = path.join(`${targetPath}${postfix}.html`);
+          postfix = `${postfix}-a`;
+        } while (files[target]);
+        return target;
+      },
+      pattern: ':title'
     }
   }
 ];
@@ -175,31 +198,48 @@ describe('metalsmith-permalinks', () => {
       });
   });
 
-  it('should use the resolve path for false values (not root)', function(done) {
-    Metalsmith('test/fixtures/falsy')
+  it('should use the resolve path for false values (not root)', done => {
+    Metalsmith(path.join(fixturesBase, 'falsy'))
       .use(permalinks(':falsy/:title'))
-      .use(function(files) {
-        Object.keys(files).forEach(function(file) {
+      .use(files => {
+        Object.keys(files).forEach(file => {
           assert.notEqual(files[file].path.charAt(0), '/');
         });
         done();
       })
-      .build(function(err) {
+      .build(err => {
         if (err) return done(err);
       });
   });
 
-  it('should use the resolve path for empty arrays (not root)', function(done) {
-    Metalsmith('test/fixtures/empty-array')
+  it('should use the resolve path for empty arrays (not root)', done => {
+    Metalsmith(path.join(fixturesBase, 'empty-array'))
       .use(permalinks(':array/:title'))
-      .use(function(files) {
-        Object.keys(files).forEach(function(file) {
+      .use(files => {
+        Object.keys(files).forEach(file => {
           assert.notEqual(files[file].path.charAt(0), '/');
         });
         done();
       })
-      .build(function(err) {
+      .build(err => {
         if (err) return done(err);
+      });
+  });
+
+  it('should return an error when clashes happen', done => {
+    Metalsmith(path.join(fixturesBase, 'duplicate-urls'))
+      .use(
+        permalinks({
+          duplicatesFail: true,
+          pattern: ':title'
+        })
+      )
+      .build(err => {
+        assert.equal(
+          err,
+          'Permalinks: Clash with another target file one-post/index.html'
+        );
+        done();
       });
   });
 });
