@@ -1,3 +1,8 @@
+- Fixed permalink override option
+- Test added
+
+  2.0.1 - January 31, 2019
+
 - Migrated to slugify to fix security issues - slug options changed slightly
 - Tests added
 
