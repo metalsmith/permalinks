@@ -33,6 +33,32 @@ describe('metalsmith-permalinks', function() {
       });
   });
 
+  it('should ignore any files with permalink equal to false option', function(done) {
+    Metalsmith('test/fixtures/permalink-false')
+      .use(permalinks(':title'))
+      .build(function(err) {
+        if (err) return done(err);
+        equal(
+          'test/fixtures/permalink-false/expected',
+          'test/fixtures/permalink-false/build'
+        );
+        done();
+      });
+  });
+
+  it('should override path in any files with permalink option', function(done) {
+    Metalsmith('test/fixtures/permalink-override')
+      .use(permalinks(':title'))
+      .build(function(err) {
+        if (err) return done(err);
+        equal(
+          'test/fixtures/permalink-override/expected',
+          'test/fixtures/permalink-override/build'
+        );
+        done();
+      });
+  });
+
   it('should accepts a shorthand string', function(done) {
     Metalsmith('test/fixtures/shorthand')
       .use(permalinks(':title'))
@@ -155,19 +181,6 @@ describe('metalsmith-permalinks', function() {
       })
       .build(function(err) {
         if (err) return done(err);
-      });
-  });
-
-  it('should ignore any files with permalink equal to false option', function(done) {
-    Metalsmith('test/fixtures/false-permalink')
-      .use(permalinks(':title'))
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/false-permalink/expected',
-          'test/fixtures/false-permalink/build'
-        );
-        done();
       });
   });
 
