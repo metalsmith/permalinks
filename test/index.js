@@ -316,24 +316,4 @@ describe('metalsmith-permalinks', function() {
         done();
       });
   });
-
-  it('should accept options for slug module and create paths', function(done) {
-    Metalsmith('test/fixtures/slug-options-path')
-      .use(
-        permalinks({
-          pattern: ':permalink',
-          slug: {
-            remove: /[.]/g
-          }
-        })
-      )
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/slug-options-path/expected',
-          'test/fixtures/slug-options-path/build'
-        );
-        done();
-      });
-  });
 });
