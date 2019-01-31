@@ -1,7 +1,17 @@
+- Added functionality to make URIs unique or report error
+- Tests added
+- Test boiler plate removed
+
+  2.1.0 - January 31, 2019
+
+---
+
 - Fixed permalink override option
 - Test added
 
   2.0.1 - January 31, 2019
+
+---
 
 - Migrated to slugify to fix security issues - slug options changed slightly
 - Tests added
