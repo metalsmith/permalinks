@@ -1,330 +1,243 @@
 /* eslint-env mocha */
-var rimraf = require('rimraf');
-var assert = require('assert');
-var equal = require('assert-dir-equal');
-var Metalsmith = require('metalsmith');
-var permalinks = require('..');
+const path = require('path');
+const rimraf = require('rimraf');
+const assert = require('assert');
+const equal = require('assert-dir-equal');
+const Metalsmith = require('metalsmith');
+const permalinks = require('..');
 
-describe('metalsmith-permalinks', function() {
-  before(function(done) {
-    rimraf('test/fixtures/*/build', done);
+const fixturesBase = path.join('test', 'fixtures');
+const fixtures = [
+  {
+    message: 'should change files even with no pattern',
+    folder: 'no-pattern',
+    options: void 0
+  },
+  {
+    message: 'should replace a pattern',
+    folder: 'pattern',
+    options: { pattern: ':title' }
+  },
+  {
+    message: 'should ignore any files with permalink equal to false option',
+    folder: 'permalink-false',
+    options: ':title'
+  },
+  {
+    message: 'should override path in any files with permalink option',
+    folder: 'permalink-override',
+    options: ':title'
+  },
+  {
+    message: 'should accepts a shorthand string',
+    folder: 'shorthand',
+    options: ':title'
+  },
+  {
+    message: 'should copy relative files to maintain references',
+    folder: 'relative',
+    options: void 0
+  },
+  {
+    message: 'should not copy relative files',
+    folder: 'no-relative',
+    options: {
+      relative: false
+    }
+  },
+
+  {
+    message: 'should copy relative files even with patterns',
+    folder: 'relative-pattern',
+    options: ':title'
+  },
+
+  {
+    message: 'should copy relative files once per output file',
+    folder: 'relative-multiple',
+    options: ':title'
+  },
+
+  {
+    message: 'should copy files in sibling folder',
+    folder: 'relative-folder',
+    options: { relative: 'folder' }
+  },
+
+  {
+    message: 'should format a date',
+    folder: 'date',
+    options: ':date'
+  },
+  {
+    message: 'should format a date with a custom formatter',
+    folder: 'custom-date',
+    options: {
+      pattern: ':date',
+      date: 'YYYY/MM'
+    }
+  },
+  {
+    message: 'should match arbitrary metadata',
+    folder: 'simple-linksets',
+    options: {
+      linksets: [
+        {
+          match: { foo: 34 },
+          pattern: 'foo/:title'
+        },
+        {
+          match: { bar: 21 },
+          pattern: 'bar/:title'
+        }
+      ]
+    }
+  },
+  {
+    message: 'should use slug by defaults',
+    folder: 'slug',
+    options: {
+      pattern: ':title'
+    }
+  },
+  {
+    message: 'should use custom slug config if specified',
+    folder: 'slug-custom',
+    options: {
+      pattern: ':title',
+      slug: { remove: /[*+~.()'"!:@=]+/g, lower: true }
+    }
+  },
+  {
+    message: 'should use custom slug function',
+    folder: 'slug-custom-function',
+    options: {
+      pattern: ':title',
+      slug: require('transliteration').slugify
+    }
+  },
+  {
+    message: 'should accept options for slug module',
+    folder: 'slug-options',
+    options: {
+      pattern: ':title',
+      slug: {
+        remove: /[.]/g,
+        lower: false
+      }
+    }
+  },
+  {
+    message: 'should accept options for slug module and create paths',
+    folder: 'slug-options-path',
+    options: {
+      pattern: ':permalink',
+      slug: {
+        remove: /[.]/g
+      }
+    }
+  },
+  {
+    message: 'should make urls unique',
+    folder: 'unique-urls',
+    options: {
+      pattern: ':title',
+      unique: true
+    }
+  },
+  {
+    message: 'should allow a custom function for unique urls',
+    folder: 'unique-function',
+    options: {
+      unique: (targetPath, files) => {
+        let target;
+        let postfix = '';
+        do {
+          target = path.join(`${targetPath}${postfix}.html`);
+          postfix = `${postfix}-a`;
+        } while (files[target]);
+        return target;
+      },
+      pattern: ':title'
+    }
+  }
+];
+
+describe('metalsmith-permalinks', () => {
+  before(done => {
+    rimraf(path.join(fixturesBase, '*', 'build'), done);
   });
 
-  it('should change files even with no pattern', function(done) {
-    Metalsmith('test/fixtures/no-pattern')
+  // Tests comparing build output against expected files
+  fixtures.forEach(({ message, options, folder }) => {
+    const basePath = path.join(fixturesBase, folder);
+    it(message, done => {
+      Metalsmith(basePath)
+        .use(permalinks(options))
+        .build(err => {
+          if (err) return done(err);
+          equal(path.join(basePath, 'expected'), path.join(basePath, 'build'));
+          done();
+        });
+    });
+  });
+
+  /// Tests with specific requirements
+  it('should replace any backslashes in paths with slashes', done => {
+    Metalsmith(path.join(fixturesBase, 'backslashes'))
       .use(permalinks())
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/no-pattern/expected',
-          'test/fixtures/no-pattern/build'
-        );
-        done();
-      });
-  });
-
-  it('should replace a pattern', function(done) {
-    Metalsmith('test/fixtures/pattern')
-      .use(permalinks({ pattern: ':title' }))
-      .build(function(err) {
-        if (err) return done(err);
-        equal('test/fixtures/pattern/expected', 'test/fixtures/pattern/build');
-        done();
-      });
-  });
-
-  it('should ignore any files with permalink equal to false option', function(done) {
-    Metalsmith('test/fixtures/permalink-false')
-      .use(permalinks(':title'))
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/permalink-false/expected',
-          'test/fixtures/permalink-false/build'
-        );
-        done();
-      });
-  });
-
-  it('should override path in any files with permalink option', function(done) {
-    Metalsmith('test/fixtures/permalink-override')
-      .use(permalinks(':title'))
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/permalink-override/expected',
-          'test/fixtures/permalink-override/build'
-        );
-        done();
-      });
-  });
-
-  it('should accepts a shorthand string', function(done) {
-    Metalsmith('test/fixtures/shorthand')
-      .use(permalinks(':title'))
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/shorthand/expected',
-          'test/fixtures/shorthand/build'
-        );
-        done();
-      });
-  });
-
-  it('should copy relative files to maintain references', function(done) {
-    Metalsmith('test/fixtures/relative')
-      .use(permalinks())
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/relative/expected',
-          'test/fixtures/relative/build'
-        );
-        done();
-      });
-  });
-
-  it('should not copy relative files', function(done) {
-    Metalsmith('test/fixtures/no-relative')
-      .use(
-        permalinks({
-          relative: false
-        })
-      )
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/no-relative/expected',
-          'test/fixtures/no-relative/build'
-        );
-        done();
-      });
-  });
-
-  it('should copy relative files even with patterns', function(done) {
-    Metalsmith('test/fixtures/relative-pattern')
-      .use(permalinks(':title'))
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/relative-pattern/expected',
-          'test/fixtures/relative-pattern/build'
-        );
-        done();
-      });
-  });
-
-  it('should copy relative files once per output file', function(done) {
-    Metalsmith('test/fixtures/relative-multiple')
-      .use(permalinks(':title'))
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/relative-multiple/expected',
-          'test/fixtures/relative-multiple/build'
-        );
-        done();
-      });
-  });
-
-  it('should copy files in sibling folder', function(done) {
-    Metalsmith('test/fixtures/relative-folder')
-      .use(permalinks({ relative: 'folder' }))
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/relative-folder/expected',
-          'test/fixtures/relative-folder/build'
-        );
-        done();
-      });
-  });
-
-  it('should format a date', function(done) {
-    Metalsmith('test/fixtures/date')
-      .use(permalinks(':date'))
-      .build(function(err) {
-        if (err) return done(err);
-        equal('test/fixtures/date/expected', 'test/fixtures/date/build');
-        done();
-      });
-  });
-
-  it('should format a date with a custom formatter', function(done) {
-    Metalsmith('test/fixtures/custom-date')
-      .use(
-        permalinks({
-          pattern: ':date',
-          date: 'YYYY/MM'
-        })
-      )
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/custom-date/expected',
-          'test/fixtures/custom-date/build'
-        );
-        done();
-      });
-  });
-
-  it('should replace any backslashes in paths with slashes', function(done) {
-    Metalsmith('test/fixtures/backslashes')
-      .use(permalinks())
-      .use(function(files, metalsmith, pluginDone) {
-        Object.keys(files).forEach(function(file) {
+      .use((files, metalsmith, pluginDone) => {
+        Object.keys(files).forEach(file => {
           assert.equal(files[file].path.indexOf('\\'), -1);
         });
         pluginDone();
         done();
       })
-      .build(function(err) {
+      .build(err => {
         if (err) return done(err);
       });
   });
 
-  it('should match arbitrary metadata', function(done) {
-    Metalsmith('test/fixtures/simple-linksets')
-      .use(
-        permalinks({
-          linksets: [
-            {
-              match: { foo: 34 },
-              pattern: 'foo/:title'
-            },
-            {
-              match: { bar: 21 },
-              pattern: 'bar/:title'
-            }
-          ]
-        })
-      )
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/simple-linksets/expected',
-          'test/fixtures/simple-linksets/build'
-        );
+  it('should use the resolve path for false values (not root)', done => {
+    Metalsmith(path.join(fixturesBase, 'falsy'))
+      .use(permalinks(':falsy/:title'))
+      .use(files => {
+        Object.keys(files).forEach(file => {
+          assert.notEqual(files[file].path.charAt(0), '/');
+        });
         done();
+      })
+      .build(err => {
+        if (err) return done(err);
       });
   });
 
-  it('should use slug by defaults', function(done) {
-    // test building of filenames
-    Metalsmith('test/fixtures/slug')
+  it('should use the resolve path for empty arrays (not root)', done => {
+    Metalsmith(path.join(fixturesBase, 'empty-array'))
+      .use(permalinks(':array/:title'))
+      .use(files => {
+        Object.keys(files).forEach(file => {
+          assert.notEqual(files[file].path.charAt(0), '/');
+        });
+        done();
+      })
+      .build(err => {
+        if (err) return done(err);
+      });
+  });
+
+  it('should return an error when clashes happen', done => {
+    Metalsmith(path.join(fixturesBase, 'duplicate-urls'))
       .use(
         permalinks({
+          duplicatesFail: true,
           pattern: ':title'
         })
       )
-      .build(function(err) {
-        if (err) return done(err);
-        equal('test/fixtures/slug/expected', 'test/fixtures/slug/build');
-        done();
-      });
-  });
-  it('should use custom slug config if specified', function(done) {
-    // test building of filenames
-    Metalsmith('test/fixtures/slug-custom')
-      .use(
-        permalinks({
-          pattern: ':title',
-          slug: { remove: /[*+~.()'"!:@=]+/g, lower: true }
-        })
-      )
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/slug-custom/expected',
-          'test/fixtures/slug-custom/build'
-        );
-        done();
-      });
-  });
-  it('should use custom slug function', function(done) {
-    // test building of filenames
-    Metalsmith('test/fixtures/slug-custom-function')
-      .use(
-        permalinks({
-          pattern: ':title',
-          slug: require('transliteration').slugify
-        })
-      )
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/slug-custom-function/expected',
-          'test/fixtures/slug-custom-function/build'
-        );
-        done();
-      });
-  });
-
-  it('should use the resolve path for false values (not root)', function(done) {
-    Metalsmith('test/fixtures/falsy')
-      .use(permalinks(':falsy/:title'))
-      .use(function(files) {
-        Object.keys(files).forEach(function(file) {
-          assert.notEqual(files[file].path.charAt(0), '/');
-        });
-        done();
-      })
-      .build(function(err) {
-        if (err) return done(err);
-      });
-  });
-
-  it('should use the resolve path for empty arrays (not root)', function(done) {
-    Metalsmith('test/fixtures/empty-array')
-      .use(permalinks(':array/:title'))
-      .use(function(files) {
-        Object.keys(files).forEach(function(file) {
-          assert.notEqual(files[file].path.charAt(0), '/');
-        });
-        done();
-      })
-      .build(function(err) {
-        if (err) return done(err);
-      });
-  });
-
-  it('should accept options for slug module', function(done) {
-    Metalsmith('test/fixtures/slug-options')
-      .use(
-        permalinks({
-          pattern: ':title',
-          slug: {
-            remove: /[.]/g,
-            lower: false
-          }
-        })
-      )
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/slug-options/expected',
-          'test/fixtures/slug-options/build'
-        );
-        done();
-      });
-  });
-
-  it('should accept options for slug module and create paths', function(done) {
-    Metalsmith('test/fixtures/slug-options-path')
-      .use(
-        permalinks({
-          pattern: ':permalink',
-          slug: {
-            remove: /[.]/g
-          }
-        })
-      )
-      .build(function(err) {
-        if (err) return done(err);
-        equal(
-          'test/fixtures/slug-options-path/expected',
-          'test/fixtures/slug-options-path/build'
+      .build(err => {
+        assert.equal(
+          err,
+          'Permalinks: Clash with another target file one-post/index.html'
         );
         done();
       });

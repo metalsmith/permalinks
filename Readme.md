@@ -117,7 +117,6 @@ And here's with `relative` off:
       css/
         style.css
 
-
 `relative` can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
 
 For example using the `folder` strategy with this source directory:
@@ -126,7 +125,6 @@ For example using the `folder` strategy with this source directory:
       post.html
       post/
         image.jpg
-
 
 Here's what the build directory would look like with `relative` set to `folder`:
 
@@ -179,6 +177,64 @@ title: My Post
 permalink: "posts/my-post"
 ---
 ```
+
+#### Overriding the default `index.html` file
+
+Use `indexFile` to define a custom index file.
+
+```js
+metalsmith.use(
+  permalinks({
+    indexFile: 'alt.html'
+  })
+);
+```
+
+#### Ensure files have unique URIs
+
+Use `unique: true` or provide a function to customise the URI when clashes occur.
+
+To automatially add `-1`, `-2`, etc. to the end of the URI to make it unique:
+
+```js
+metalsmith.use(
+  permalinks({
+    unique: true
+  }
+);
+```
+
+Provide your own function to create a unique URI:
+
+```js
+metalsmith.use(
+  permalinks({
+    unique: uniqueFunction
+  }
+);
+```
+
+Where `uniqueFunction` takes the form:
+
+```js
+const uniqueFunction = (path, files, filename, options) => {
+  return `path/index.html`;
+};
+```
+
+#### Error when there's a URI conflict
+
+When URI when clashes occur, the build will halt with an error stating the target file conflict.
+
+```js
+metalsmith.use(
+  permalinks({
+    duplicatesFail: true
+  }
+);
+```
+
+_Note_: This will not work if you've provided your own `unique` function.
 
 #### CLI
 
