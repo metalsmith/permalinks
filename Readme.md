@@ -164,6 +164,22 @@ metalsmith.use(
 );
 ```
 
+The following makes everything snake-case but allows `'` to be converted to `-`
+
+```js
+metalsmith.use(
+  permalinks({
+    slug: {
+      remove: /[^a-z0-9- ]+/gi,
+      lower: true,
+      extend: {
+        "'": '-'
+      }
+    }
+  })
+);
+```
+
 #### Overriding the permalink for a file
 
 Using the `permalink` property in a file's front-matter, its permalink can be overridden. This can be useful for transferring
@@ -249,6 +265,10 @@ You can also use the plugin with the Metalsmith CLI by adding a key to your `met
   }
 }
 ```
+
+## History
+
+[History](./History.md#Latest)
 
 ## License
 

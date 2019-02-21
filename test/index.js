@@ -105,7 +105,13 @@ const fixtures = [
     folder: 'slug-custom',
     options: {
       pattern: ':title',
-      slug: { remove: /[*+~.()'"!:@=]+/g, lower: true }
+      slug: {
+        remove: /[^a-z0-9- ]+/gi,
+        lower: true,
+        extend: {
+          "'": '-'
+        }
+      }
     }
   },
   {
