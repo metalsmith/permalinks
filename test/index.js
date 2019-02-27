@@ -29,6 +29,13 @@ const fixtures = [
     options: ':title'
   },
   {
+    message: 'should not rename file extension',
+    folder: 'disable-rename',
+    options: {
+      rename: false
+    }
+  },
+  {
     message: 'should accepts a shorthand string',
     folder: 'shorthand',
     options: ':title'

@@ -206,6 +206,20 @@ metalsmith.use(
 );
 ```
 
+Keep file extensions:
+
+Use `rename: false` to keep the original file extension which allows more flexibility with other plugins.
+
+Change the default behaviour to carry over the existing file extension, `/file.hbs` is named `/file/index.hbs`:
+
+```js
+metalsmith.use(
+  permalinks({
+    rename: false
+  }
+);
+```
+
 #### Ensure files have unique URIs
 
 Use `unique: true` or provide a function to customise the URI when clashes occur.
