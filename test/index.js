@@ -194,7 +194,7 @@ describe('metalsmith-permalinks', () => {
       .use(permalinks())
       .use((files, metalsmith, pluginDone) => {
         Object.keys(files).forEach(file => {
-          assert.equal(files[file].path.indexOf('\\'), -1);
+          assert.equal(files[file].path.includes('\\'), false);
         });
         pluginDone();
         done();
