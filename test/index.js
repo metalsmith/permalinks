@@ -1,9 +1,13 @@
 /* eslint-env mocha */
+
+'use strict';
+
+const assert = require('assert');
 const path = require('path');
 const rimraf = require('rimraf');
-const assert = require('assert');
 const equal = require('assert-dir-equal');
 const Metalsmith = require('metalsmith');
+const transliteration = require('transliteration');
 const permalinks = require('..');
 
 const fixturesBase = path.join('test', 'fixtures');
@@ -119,7 +123,7 @@ const fixtures = [
     folder: 'slug-custom-function',
     options: {
       pattern: ':title',
-      slug: require('transliteration').slugify
+      slug: transliteration.slugify
     }
   },
   {
@@ -162,6 +166,7 @@ const fixtures = [
           target = path.join(`${targetPath}${postfix}.html`);
           postfix = `${postfix}-a`;
         } while (files[target]);
+
         return target;
       },
       pattern: ':title'
@@ -194,7 +199,7 @@ describe('metalsmith-permalinks', () => {
       .use(permalinks())
       .use((files, metalsmith, pluginDone) => {
         Object.keys(files).forEach(file => {
-          assert.equal(files[file].path.includes('\\'), false);
+          assert.strictEqual(files[file].path.includes('\\'), false);
         });
         pluginDone();
         done();
@@ -209,7 +214,7 @@ describe('metalsmith-permalinks', () => {
       .use(permalinks(':falsy/:title'))
       .use(files => {
         Object.keys(files).forEach(file => {
-          assert.notEqual(files[file].path.charAt(0), '/');
+          assert.notStrictEqual(files[file].path.charAt(0), '/');
         });
         done();
       })
@@ -223,7 +228,7 @@ describe('metalsmith-permalinks', () => {
       .use(permalinks(':array/:title'))
       .use(files => {
         Object.keys(files).forEach(file => {
-          assert.notEqual(files[file].path.charAt(0), '/');
+          assert.notStrictEqual(files[file].path.charAt(0), '/');
         });
         done();
       })
@@ -241,7 +246,7 @@ describe('metalsmith-permalinks', () => {
         })
       )
       .build(err => {
-        assert.equal(
+        assert.strictEqual(
           err,
           `Permalinks: Clash with another target file ${path.normalize(
             'one-post/index.html'
