@@ -9,7 +9,7 @@
     "pretest": "npm run lint",
     "test": "mocha test",
     "lint": "eslint --cache --fix .",
-    "dev": "nodemon --exec 'npm test'",
+    "dev": "nodemon --exec \"npm test\"",
     "preversion": "npm test",
     "postversion": "git push && git push --tags && npm publish"
   },
