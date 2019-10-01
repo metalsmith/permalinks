@@ -243,7 +243,9 @@ describe('metalsmith-permalinks', () => {
       .build(err => {
         assert.equal(
           err,
-          'Permalinks: Clash with another target file one-post/index.html'
+          `Permalinks: Clash with another target file ${path.normalize(
+            'one-post/index.html'
+          )}`
         );
         done();
       });
