@@ -8,7 +8,7 @@
   "scripts": {
     "pretest": "npm run lint",
     "test": "mocha test",
-    "lint": "eslint --cache --fix .",
+    "lint": "xo --fix",
     "dev": "nodemon --exec \"npm test\"",
     "preversion": "npm test",
     "postversion": "git push && git push --tags && npm publish"
@@ -21,20 +21,35 @@
   },
   "devDependencies": {
     "assert-dir-equal": "^1.1.0",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^4.3.0",
-    "eslint-plugin-prettier": "^3.1.1",
     "metalsmith": "^2.3.0",
     "mocha": "^6.2.1",
     "nodemon": "^1.19.3",
-    "prettier": "^1.18.2",
     "rimraf": "^2.7.1",
-    "transliteration": "^2.1.7"
+    "transliteration": "^2.1.7",
+    "xo": "^0.24.0"
   },
   "files": [
     "lib/*.js"
   ],
   "engines": {
     "node": ">=6"
+  },
+  "xo": {
+    "esnext": true,
+    "prettier": true,
+    "space": true,
+    "rules": {
+      "capitalized-comments": "off",
+      "new-cap": "off",
+      "no-console": "warn",
+      "spaced-comment": "off",
+      "valid-jsdoc": [
+        "warn",
+        {
+          "requireParamDescription": false,
+          "requireReturnDescription": false
+        }
+      ]
+    }
   }
 }

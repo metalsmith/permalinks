@@ -36,7 +36,4 @@ node_modules
 # Package Lock
 package-lock.json
 
-# ESLint Cache
-.eslintcache
-
 test/fixtures/*/build/
