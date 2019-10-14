@@ -70,7 +70,7 @@ metalsmith.use(
 );
 ```
 
-It uses [moment.js](http://momentjs.com/docs/#/displaying/format/) to format the string.
+It uses [moment.js](https://momentjs.com/docs/#/displaying/format/) to format the string.
 
 #### Custom 'slug' function
 
@@ -281,4 +281,4 @@ MIT
 [prettier-badge]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg
 [prettier-url]: https://github.com/prettier/prettier
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-plugin-green.svg?longCache=true
-[metalsmith-url]: http://metalsmith.io
+[metalsmith-url]: https://metalsmith.io/
