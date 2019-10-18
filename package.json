@@ -6,11 +6,12 @@
   "license": "MIT",
   "main": "lib/index.js",
   "scripts": {
-    "pretest": "npm run lint",
-    "test": "mocha test",
-    "lint": "xo --fix",
-    "dev": "nodemon --exec \"npm test\"",
-    "preversion": "npm test",
+    "lint": "xo",
+    "lint:fix": "xo --fix",
+    "dev": "nodemon --exec \"npm run lint:fix && npm test\"",
+    "mocha": "mocha",
+    "test": "npm run lint && npm run mocha",
+    "preversion": "npm run lint && npm test",
     "postversion": "git push && git push --tags && npm publish"
   },
   "dependencies": {
