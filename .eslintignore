@@ -3,3 +3,4 @@
 /assets/*
 /temp*
 /repositories/*
+/lib/substitute.js
