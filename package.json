@@ -9,7 +9,7 @@
     "pretest": "npm run lint",
     "test": "mocha test",
     "lint": "eslint --cache --fix .",
-    "dev": "nodemon --exec \"npm test\"",
+    "dev": "chokidar \"{lib,test}/**/*.js\" --command \"npm test\"",
     "preversion": "npm test",
     "postversion": "git push && git push --tags && npm publish"
   },
@@ -21,12 +21,12 @@
   },
   "devDependencies": {
     "assert-dir-equal": "^1.1.0",
+    "chokidar-cli": "^2.1.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-prettier": "^3.1.1",
     "metalsmith": "^2.3.0",
     "mocha": "^6.2.1",
-    "nodemon": "^1.19.3",
     "prettier": "^1.18.2",
     "rimraf": "^2.7.1",
     "transliteration": "^2.1.7"
