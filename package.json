@@ -25,7 +25,7 @@
     "metalsmith": "^2.3.0",
     "mocha": "^6.2.1",
     "nodemon": "^1.19.3",
-    "rimraf": "^2.7.1",
+    "rimraf": "^3.0.2",
     "transliteration": "^2.1.7",
     "xo": "^0.24.0"
   },
