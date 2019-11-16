@@ -1,24 +1,25 @@
 # metalsmith-permalinks
 
 [![npm version][npm-badge]][npm-url]
+[![Build Status][ci-badge]][ci-url]
 [![code style: prettier][prettier-badge]][prettier-url]
 [![metalsmith: plugin][metalsmith-badge]][metalsmith-url]
-
-[![Build Status][ci-badge]][ci-url]
 
 A Metalsmith plugin that applies a custom permalink pattern to files, and renames them so that they're nested properly for static sites (converting `about.html` into `about/index.html`).
 
 ## Installation
 
-    $ npm install metalsmith-permalinks
+```shell
+npm install metalsmith-permalinks
+```
 
 ## Usage
 
 ```js
-var Metalsmith = require('metalsmith');
-var permalinks = require('metalsmith-permalinks');
+const Metalsmith = require('metalsmith');
+const permalinks = require('metalsmith-permalinks');
 
-var metalsmith = new Metalsmith(__dirname).use(
+const metalsmith = new Metalsmith(__dirname).use(
   permalinks({
     pattern: ':title'
   })
@@ -32,10 +33,10 @@ If no pattern is provided, the files won't be remapped, but the `path` metadata 
 The `pattern` can also be a set as such:
 
 ```js
-var Metalsmith = require('metalsmith');
-var permalinks = require('metalsmith-permalinks');
+const Metalsmith = require('metalsmith');
+const permalinks = require('metalsmith-permalinks');
 
-var metalsmith = new Metalsmith(__dirname).use(
+const metalsmith = new Metalsmith(__dirname).use(
   permalinks({
     // original options would act as the keys of a `default` linkset,
     pattern: ':title',
@@ -57,7 +58,7 @@ var metalsmith = new Metalsmith(__dirname).use(
 );
 ```
 
-#### Dates
+### Dates
 
 By default any date will be converted to a `YYYY/MM/DD` format when using in a permalink pattern, but you can change the conversion by passing a `date` option:
 
@@ -72,67 +73,79 @@ metalsmith.use(
 
 It uses [moment.js](https://momentjs.com/docs/#/displaying/format/) to format the string.
 
-#### Custom 'slug' function
+### Custom 'slug' function
 
 If you do not like filenames, you can replace slug function.
 For now only js version of syntax is supported and tested.
 
 ```js
+const transliteration = require('transliteration');
+
 metalsmith.use(
   permalinks({
     pattern: ':title',
-    slug: require('transliteration').slugify
+    slug: transliteration.slugify
   })
 );
 ```
 
 There are plenty on npm for transliteration and slugs. <https://www.npmjs.com/browse/keyword/transliteration>, better than default slug-component.
 
-#### Relative Files
+### Relative Files
 
 When this plugin rewrites your files to be permalinked properly, it will also duplicate sibling files so that relative links like `/images/cat.gif` will be preserved nicely. You can turn this feature off by setting the `relative` option to `false`.
 
 For example for this source directory:
 
-    src/
-      css/
-        style.css
-      post.html
+```
+src/
+  css/
+    style.css
+  post.html
+```
 
 Here's what the build directory would look like with `relative` on:
 
-    build/
-      post/
-        index.html
-        css/
-          style.css
-      css/
-        style.css
+```
+build/
+  post/
+    index.html
+    css/
+      style.css
+  css/
+    style.css
+```
 
 And here's with `relative` off:
 
-    build/
-      post/
-        index.html
-      css/
-        style.css
+```
+build/
+  post/
+    index.html
+  css/
+    style.css
+```
 
 `relative` can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
 
 For example using the `folder` strategy with this source directory:
 
-    src/
-      post.html
-      post/
-        image.jpg
+```
+src/
+  post.html
+  post/
+    image.jpg
+```
 
 Here's what the build directory would look like with `relative` set to `folder`:
 
-    build/
-        index.html
-        image.jpg
+```
+build/
+    index.html
+    image.jpg
+```
 
-#### Skipping Permalinks for a file
+### Skipping Permalinks for a file
 
 A file can be ignored by the metalsmith-permalinks plugin if you pass the `permalink: false` option to the yaml metadata of a file.
 This is useful for hosting a static site on AWS S3, where there is a top level `error.html` file and not an `error/index.html` file.
@@ -147,7 +160,7 @@ permalink: false
 ---
 ```
 
-#### Slug Options
+### Slug Options
 
 [slug](https://www.npmjs.com/package/slugify) is used for slugifying strings and it's set to lower-case mode by default.
 
@@ -180,7 +193,7 @@ metalsmith.use(
 );
 ```
 
-#### Overriding the permalink for a file
+### Overriding the permalink for a file
 
 Using the `permalink` property in a file's front-matter, its permalink can be overridden. This can be useful for transferring
 projects over to Metalsmith where pages don't follow a strict permalink system.
@@ -194,7 +207,7 @@ permalink: "posts/my-post"
 ---
 ```
 
-#### Overriding the default `index.html` file
+### Overriding the default `index.html` file
 
 Use `indexFile` to define a custom index file.
 
@@ -206,11 +219,11 @@ metalsmith.use(
 );
 ```
 
-#### Ensure files have unique URIs
+### Ensure files have unique URIs
 
 Use `unique: true` or provide a function to customise the URI when clashes occur.
 
-To automatially add `-1`, `-2`, etc. to the end of the URI to make it unique:
+To automatically add `-1`, `-2`, etc. to the end of the URI to make it unique:
 
 ```js
 metalsmith.use(
@@ -238,7 +251,7 @@ const uniqueFunction = (path, files, filename, options) => {
 };
 ```
 
-#### Error when there's a URI conflict
+### Error when there's a URI conflict
 
 When URI when clashes occur, the build will halt with an error stating the target file conflict.
 
@@ -252,7 +265,7 @@ metalsmith.use(
 
 _Note_: This will not work if you've provided your own `unique` function.
 
-#### CLI
+### CLI
 
 You can also use the plugin with the Metalsmith CLI by adding a key to your `metalsmith.json` file:
 
