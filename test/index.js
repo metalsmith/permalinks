@@ -15,7 +15,7 @@ const fixtures = [
   {
     message: 'should change files even with no pattern',
     folder: 'no-pattern',
-    options: void 0
+    options: undefined
   },
   {
     message: 'should replace a pattern',
@@ -40,7 +40,7 @@ const fixtures = [
   {
     message: 'should copy relative files to maintain references',
     folder: 'relative',
-    options: void 0
+    options: undefined
   },
   {
     message: 'should not copy relative files',
