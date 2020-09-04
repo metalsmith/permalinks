@@ -1,7 +1,21 @@
 {
-  "name": "metalsmith-permalinks",
+  "name": "@metalsmith/permalinks",
   "description": "A metalsmith plugin for permalinks.",
-  "repository": "git://github.com/segmentio/metalsmith-permalinks.git",
+  "keywords": [
+    "permalinks",
+    "metalsmith",
+    "metalsmith-plugin",
+    "static-site"
+  ],
+  "homepage": "https://github.com/metalsmith/permalinks#readme",
+  "bugs": {
+    "url": "https://github.com/metalsmith/permalinks/issues"
+  },
+  "author": "Ian Storm Taylor (https://ianstormtaylor.com)",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/metalsmith/permalinks.git"
+  },
   "version": "2.2.0",
   "license": "MIT",
   "main": "lib/index.js",
