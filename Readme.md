@@ -1,4 +1,4 @@
-# metalsmith-permalinks
+# @metalsmith/permalinks
 
 [![npm version][npm-badge]][npm-url]
 [![code style: prettier][prettier-badge]][prettier-url]
@@ -10,13 +10,13 @@ A Metalsmith plugin that applies a custom permalink pattern to files, and rename
 
 ## Installation
 
-    $ npm install metalsmith-permalinks
+    $ npm install @metalsmith/permalinks
 
 ## Usage
 
 ```js
-var Metalsmith = require('metalsmith');
-var permalinks = require('metalsmith-permalinks');
+var Metalsmith = require('@metalsmith/metalsmith');
+var permalinks = require('@metalsmith/permalinks');
 
 var metalsmith = new Metalsmith(__dirname).use(
   permalinks({
@@ -33,7 +33,7 @@ The `pattern` can also be a set as such:
 
 ```js
 var Metalsmith = require('metalsmith');
-var permalinks = require('metalsmith-permalinks');
+var permalinks = require('@metalsmith/permalinks');
 
 var metalsmith = new Metalsmith(__dirname).use(
   permalinks({
@@ -134,7 +134,7 @@ Here's what the build directory would look like with `relative` set to `folder`:
 
 #### Skipping Permalinks for a file
 
-A file can be ignored by the metalsmith-permalinks plugin if you pass the `permalink: false` option to the yaml metadata of a file.
+A file can be ignored by the permalinks plugin if you pass the `permalink: false` option to the yaml metadata of a file.
 This is useful for hosting a static site on AWS S3, where there is a top level `error.html` file and not an `error/index.html` file.
 
 For example, in your error.md file:
@@ -259,7 +259,7 @@ You can also use the plugin with the Metalsmith CLI by adding a key to your `met
 ```json
 {
   "plugins": {
-    "metalsmith-permalinks": {
+    "permalinks": {
       "pattern": ":title"
     }
   }
@@ -274,10 +274,10 @@ You can also use the plugin with the Metalsmith CLI by adding a key to your `met
 
 MIT
 
-[npm-badge]: https://img.shields.io/npm/v/metalsmith-permalinks.svg
-[npm-url]: https://www.npmjs.com/package/metalsmith-permalinks
-[ci-badge]: https://github.com/segmentio/metalsmith-permalinks/workflows/Tests/badge.svg
-[ci-url]: https://github.com/segmentio/metalsmith-permalinks/actions?workflow=Tests
+[npm-badge]: https://img.shields.io/npm/v/@metalsmith/permalinks.svg
+[npm-url]: https://www.npmjs.com/package/@metalsmith/permalinks
+[ci-badge]: https://github.com/metalsmith/permalinks/workflows/Tests/badge.svg
+[ci-url]: https://github.com/metalsmith/permalinks/actions?workflow=Tests
 [prettier-badge]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg
 [prettier-url]: https://github.com/prettier/prettier
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-plugin-green.svg?longCache=true

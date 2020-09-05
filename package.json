@@ -14,7 +14,7 @@
   "author": "Ian Storm Taylor (https://ianstormtaylor.com)",
   "repository": {
     "type": "git",
-    "url": "git://github.com/metalsmith/permalinks.git"
+    "url": "https://github.com/metalsmith/permalinks.git"
   },
   "version": "2.2.0",
   "license": "MIT",
@@ -41,7 +41,7 @@
     "nodemon": "^1.19.3",
     "rimraf": "^2.7.1",
     "transliteration": "^2.1.7",
-    "xo": "^0.24.0"
+    "xo": "^0.33.1"
   },
   "files": [
     "lib/*.js"
