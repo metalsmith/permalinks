@@ -11,9 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # change `8.16.1` to `8` when https://github.com/actions/setup-node/issues/27
-        # is fixed
-        node: [6, 8.16.1, 10, 12]
+        # align node testing with LTS EOL
+        node: [10, 12, 14]
         os: [ubuntu-latest, windows-latest]
 
     steps:
@@ -32,5 +31,4 @@ jobs:
         run: npm install
 
       - name: Run tests
-        # workaround for xo not working with node versions < 10
-        run: echo $(node --version | cut -d'.' -f 1) | ([ ${nv:1} -gte 10 ] && npm run test) || mocha
+        run: npm run test
