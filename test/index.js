@@ -110,7 +110,7 @@ const fixtures = [
     options: {
       pattern: ':title',
       slug: {
-        remove: /[^a-z0-9- ]+/gi,
+        remove: /[^a-z\d- ]+/gi,
         lower: true,
         extend: {
           "'": '-'
@@ -132,7 +132,7 @@ const fixtures = [
     options: {
       pattern: ':title',
       slug: {
-        remove: /[.]/g,
+        remove: /\./g,
         lower: false
       }
     }
@@ -143,7 +143,7 @@ const fixtures = [
     options: {
       pattern: ':permalink',
       slug: {
-        remove: /[.]/g
+        remove: /\./g
       }
     }
   },

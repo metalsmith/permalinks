@@ -24,7 +24,7 @@
     "lint:fix": "xo --fix",
     "dev": "nodemon --exec \"npm run lint:fix && npm test\"",
     "mocha": "mocha",
-    "test": "npm run lint && npm run mocha",
+    "test": "npm run lint:fix && npm run mocha",
     "preversion": "npm run lint && npm test",
     "postversion": "git push && git push --tags && npm publish"
   },
@@ -56,6 +56,8 @@
     "rules": {
       "capitalized-comments": "off",
       "new-cap": "off",
+      "unicorn/no-reduce": "off",
+      "unicorn/prevent-abbreviations": "off",
       "no-console": "warn",
       "spaced-comment": "off",
       "valid-jsdoc": [
