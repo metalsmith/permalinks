@@ -32,4 +32,5 @@ jobs:
         run: npm install
 
       - name: Run tests
-        run: npm test
+        # workaround for xo not working with node versions < 10
+        run: echo $(node --version | cut -d'.' -f 1) | ([ ${nv:1} -gte 10 ] && npm run test) || mocha
