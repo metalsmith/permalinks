@@ -72,10 +72,58 @@ metalsmith.use(
 
 It uses [moment.js](https://momentjs.com/docs/#/displaying/format/) to format the string.
 
-#### Custom 'slug' function
+#### Slug options
 
-If you do not like filenames, you can replace slug function.
-For now only js version of syntax is supported and tested.
+You can finetune how a pattern is processed by providing custom [slug](https://developer.mozilla.org/en-US/docs/Glossary/Slug) options.
+By default [slugify](https://www.npmjs.com/package/slugify) is used and patterns will be lowercased.
+
+You can pass custom [slug options](https://www.npmjs.com/package/slugify#options):
+
+```js
+metalsmith.use(
+  permalinks({
+    slug: {
+      replacement: '_',
+      lower: false
+    }
+  })
+);
+```
+
+The following makes everything snake-case but allows `'` to be converted to `-`
+
+```js
+metalsmith.use(
+  permalinks({
+    slug: {
+      remove: /[^a-z0-9- ]+/gi,
+      lower: true,
+      extend: {
+        "'": '-'
+      }
+    }
+  })
+);
+```
+##### Handling special characters
+
+If your pattern parts contain special characters like `:` or `=`, specifying `slug.strict` as `true` is a quick way to remove them:
+
+```js
+metalsmith.use(
+  permalinks({
+    slug: {
+      lower: true,
+      strict: true
+    }
+  })
+);
+```
+
+##### Custom 'slug' function
+
+If the result is not to your liking, you can replace the slug function altogether.
+For now only the js version of syntax is supported and tested.
 
 ```js
 metalsmith.use(
@@ -86,7 +134,7 @@ metalsmith.use(
 );
 ```
 
-There are plenty on npm for transliteration and slugs. <https://www.npmjs.com/browse/keyword/transliteration>, better than default slug-component.
+There are plenty of other options on npm for transliteration and slugs. <https://www.npmjs.com/browse/keyword/transliteration>.
 
 #### Relative Files
 
@@ -145,39 +193,6 @@ template: error.html
 title: error
 permalink: false
 ---
-```
-
-#### Slug Options
-
-[slug](https://www.npmjs.com/package/slugify) is used for slugifying strings and it's set to lower-case mode by default.
-
-You can pass custom [slug options](https://www.npmjs.com/package/slugify#options):
-
-```js
-metalsmith.use(
-  permalinks({
-    slug: {
-      replacement: '_',
-      lower: false
-    }
-  })
-);
-```
-
-The following makes everything snake-case but allows `'` to be converted to `-`
-
-```js
-metalsmith.use(
-  permalinks({
-    slug: {
-      remove: /[^a-z0-9- ]+/gi,
-      lower: true,
-      extend: {
-        "'": '-'
-      }
-    }
-  })
-);
 ```
 
 #### Overriding the permalink for a file
