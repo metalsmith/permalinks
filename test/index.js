@@ -171,7 +171,40 @@ const fixtures = [
       },
       pattern: ':title'
     }
-  }
+  },
+  {
+    message:
+      'should overwrite default linkset options with specific linkset options',
+    folder: 'linkset-overwrite-default',
+    options: {
+      pattern: ':title',
+      linksets: [
+        {
+          match: { overwrite: true },
+          pattern: 'overwritten/:title'
+        }
+      ]
+    }
+  },
+  {
+    message:
+      'should apply the first linkset when multiple linksets match the same file',
+    folder: 'linkset-rule-precedence',
+    options: {
+      pattern: ':title',
+      linksets: [
+        {
+          match: { bothFilesHaveThisProperty: true },
+          pattern: 'first/:title'
+        },
+        {
+          match: { bothFilesHaveThisProperty: true },
+          pattern: 'second/:title'
+        }
+      ]
+    }
+  },
+
 ];
 
 describe('@metalsmith/permalinks', () => {
