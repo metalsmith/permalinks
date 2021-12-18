@@ -25,7 +25,7 @@
     "coveralls": "npm run coverage && cat ./coverage.info | coveralls",
     "format": "prettier --write \"**/*.{yml,md,js,json}\"",
     "lint": "eslint --cache --fix-dry-run \"**/*.js\"",
-    "dev": "nodemon --exec \"npm run lint:fix && npm test\"",
+    "dev": "nodemon --exec \"npm run lint && npm test\"",
     "test": "nyc mocha",
     "release": "release-it ."
   },
