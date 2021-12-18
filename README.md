@@ -1,24 +1,31 @@
 # @metalsmith/permalinks
 
-[![npm version][npm-badge]][npm-url]
-[![code style: prettier][prettier-badge]][prettier-url]
-[![metalsmith: plugin][metalsmith-badge]][metalsmith-url]
-
-[![Build Status][ci-badge]][ci-url]
-
 A Metalsmith plugin that applies a custom permalink pattern to files, and renames them so that they're nested properly for static sites (converting `about.html` into `about/index.html`).
+
+[![metalsmith: core plugin][metalsmith-badge]][metalsmith-url]
+[![npm: version][npm-badge]][npm-url]
+[![ci: build][ci-badge]][ci-url]
+[![code coverage][codecov-badge]][codecov-url]
+[![license: MIT][license-badge]][license-url]
 
 ## Installation
 
-    $ npm install @metalsmith/permalinks
+NPM:
+```bash
+npm install @metalsmith/permalinks
+```
+Yarn:
+```bash
+yarn add @metalsmith/permalinks
+```
 
 ## Usage
 
 ```js
-var Metalsmith = require('@metalsmith/metalsmith');
-var permalinks = require('@metalsmith/permalinks');
+const Metalsmith = require('metalsmith');
+const permalinks = require('@metalsmith/permalinks');
 
-var metalsmith = new Metalsmith(__dirname).use(
+const metalsmith = new Metalsmith(__dirname).use(
   permalinks({
     pattern: ':title'
   })
@@ -32,10 +39,10 @@ If no pattern is provided, the files won't be remapped, but the `path` metadata 
 The `pattern` can also be a set as such:
 
 ```js
-var Metalsmith = require('metalsmith');
-var permalinks = require('@metalsmith/permalinks');
+const Metalsmith = require('metalsmith');
+const permalinks = require('@metalsmith/permalinks');
 
-var metalsmith = new Metalsmith(__dirname).use(
+const metalsmith = new Metalsmith(__dirname).use(
   permalinks({
     // original options would act as the keys of a `default` linkset,
     pattern: ':title',
@@ -57,7 +64,7 @@ var metalsmith = new Metalsmith(__dirname).use(
 );
 ```
 
-#### Dates
+### Dates
 
 By default any date will be converted to a `YYYY/MM/DD` format when using in a permalink pattern, but you can change the conversion by passing a `date` option:
 
@@ -72,7 +79,7 @@ metalsmith.use(
 
 It uses [moment.js](https://momentjs.com/docs/#/displaying/format/) to format the string.
 
-#### Slug options
+### Slug options
 
 You can finetune how a pattern is processed by providing custom [slug](https://developer.mozilla.org/en-US/docs/Glossary/Slug) options.
 By default [slugify](https://www.npmjs.com/package/slugify) is used and patterns will be lowercased.
@@ -105,7 +112,7 @@ metalsmith.use(
   })
 );
 ```
-##### Handling special characters
+#### Handling special characters
 
 If your pattern parts contain special characters like `:` or `=`, specifying `slug.strict` as `true` is a quick way to remove them:
 
@@ -120,7 +127,7 @@ metalsmith.use(
 );
 ```
 
-##### Custom 'slug' function
+#### Custom 'slug' function
 
 If the result is not to your liking, you can replace the slug function altogether.
 For now only the js version of syntax is supported and tested.
@@ -136,7 +143,7 @@ metalsmith.use(
 
 There are plenty of other options on npm for transliteration and slugs. <https://www.npmjs.com/browse/keyword/transliteration>.
 
-#### Relative Files
+### Relative Files
 
 When this plugin rewrites your files to be permalinked properly, it will also duplicate sibling files so that relative links like `/images/cat.gif` will be preserved nicely. You can turn this feature off by setting the `relative` option to `false`.
 
@@ -180,7 +187,7 @@ Here's what the build directory would look like with `relative` set to `folder`:
         index.html
         image.jpg
 
-#### Skipping Permalinks for a file
+### Skipping Permalinks for a file
 
 A file can be ignored by the permalinks plugin if you pass the `permalink: false` option to the yaml metadata of a file.
 This is useful for hosting a static site on AWS S3, where there is a top level `error.html` file and not an `error/index.html` file.
@@ -195,7 +202,7 @@ permalink: false
 ---
 ```
 
-#### Overriding the permalink for a file
+### Overriding the permalink for a file
 
 Using the `permalink` property in a file's front-matter, its permalink can be overridden. This can be useful for transferring
 projects over to Metalsmith where pages don't follow a strict permalink system.
@@ -209,7 +216,7 @@ permalink: "posts/my-post"
 ---
 ```
 
-#### Overriding the default `index.html` file
+### Overriding the default `index.html` file
 
 Use `indexFile` to define a custom index file.
 
@@ -221,7 +228,7 @@ metalsmith.use(
 );
 ```
 
-#### Ensure files have unique URIs
+### Ensure files have unique URIs
 
 Use `unique: true` or provide a function to customise the URI when clashes occur.
 
@@ -253,7 +260,7 @@ const uniqueFunction = (path, files, filename, options) => {
 };
 ```
 
-#### Error when there's a URI conflict
+### Error when there's a URI conflict
 
 When URI when clashes occur, the build will halt with an error stating the target file conflict.
 
@@ -267,33 +274,49 @@ metalsmith.use(
 
 _Note_: This will not work if you've provided your own `unique` function.
 
-#### CLI
+### Debug
 
-You can also use the plugin with the Metalsmith CLI by adding a key to your `metalsmith.json` file:
+To log debug output, set the `DEBUG` environment variable to `@metalsmith/permalinks`:
+
+Linux/Mac:
+
+```bash
+DEBUG=@metalsmith/permalinks
+```
+
+Windows:
+
+```batch
+set "DEBUG=@metalsmith/permalinks"
+```
+
+### CLI usage
+
+To use this plugin with the Metalsmith CLI, add `@metalsmith/permalinks` to the `plugins` key in your `metalsmith.json` file:
 
 ```json
 {
-  "plugins": {
-    "permalinks": {
-      "pattern": ":title"
+  "plugins": [
+    {
+      "permalinks": {
+        "pattern": ":title"
+      }
     }
-  }
+  ]
 }
 ```
 
-## History
-
-[History](./History.md#Latest)
-
 ## License
 
-MIT
+[MIT](LICENSE)
 
 [npm-badge]: https://img.shields.io/npm/v/@metalsmith/permalinks.svg
 [npm-url]: https://www.npmjs.com/package/@metalsmith/permalinks
-[ci-badge]: https://github.com/metalsmith/permalinks/workflows/Tests/badge.svg
-[ci-url]: https://github.com/metalsmith/permalinks/actions?workflow=Tests
-[prettier-badge]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg
-[prettier-url]: https://github.com/prettier/prettier
+[ci-badge]: https://app.travis-ci.com/metalsmith/permalinks.svg?branch=master
+[ci-url]: https://app.travis-ci.com/github/metalsmith/permalinks
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-plugin-green.svg?longCache=true
 [metalsmith-url]: https://metalsmith.io/
+[codecov-badge]: https://img.shields.io/coveralls/github/metalsmith/permalinks
+[codecov-url]: https://coveralls.io/github/metalsmith/permalinks
+[license-badge]: https://img.shields.io/github/license/metalsmith/permalinks
+[license-url]: LICENSE

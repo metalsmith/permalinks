@@ -174,7 +174,7 @@ const fixtures = [
   }
 ];
 
-describe('metalsmith-permalinks', () => {
+describe('@metalsmith/permalinks', () => {
   before(done => {
     rimraf(path.join(fixturesBase, '*', 'build'), done);
   });

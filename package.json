@@ -20,13 +20,14 @@
   "license": "MIT",
   "main": "lib/index.js",
   "scripts": {
-    "lint": "xo",
-    "lint:fix": "xo --fix",
+    "changelog": "auto-changelog -u --starting-date 2021-05-01 --commit-limit false --ignore-commit-pattern '(dev|Release|Merge)'",
+    "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
+    "coveralls": "npm run coverage && cat ./coverage.info | coveralls",
+    "format": "prettier --write \"**/*.{yml,md,js,json}\"",
+    "lint": "eslint --cache --fix-dry-run \"**/*.js\"",
     "dev": "nodemon --exec \"npm run lint:fix && npm test\"",
-    "mocha": "mocha",
-    "test": "npm run lint && npm run mocha",
-    "preversion": "npm run lint && npm test",
-    "postversion": "git push && git push --tags && npm publish --scope=@metalsmith"
+    "test": "nyc mocha",
+    "release": "release-it ."
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -36,38 +37,34 @@
   },
   "devDependencies": {
     "assert-dir-equal": "^1.1.0",
+    "auto-changelog": "^2.3.0",
+    "coveralls": "^3.1.1",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-recommended": "^4.1.0",
     "metalsmith": "^2.3.0",
-    "mocha": "^6.2.1",
+    "mocha": "^7.2.0",
     "nodemon": "^2.0.4",
+    "nyc": "^15.1.0",
+    "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "transliteration": "^2.2.0",
-    "xo": "^0.33.1"
+    "transliteration": "^2.2.0"
+  },
+  "peerDependencies": {
+    "metalsmith": "^2.3.0"
   },
   "files": [
-    "lib/*.js"
+    "lib",
+    "CHANGELOG.md"
   ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
   "engines": {
     "node": ">=8"
   },
-  "xo": {
-    "esnext": true,
-    "prettier": true,
-    "space": true,
-    "rules": {
-      "capitalized-comments": "off",
-      "new-cap": "off",
-      "func-names": "off",
-      "unicorn/no-reduce": "off",
-      "unicorn/prevent-abbreviations": "off",
-      "no-console": "warn",
-      "spaced-comment": "off",
-      "valid-jsdoc": [
-        "warn",
-        {
-          "requireParamDescription": false,
-          "requireReturnDescription": false
-        }
-      ]
-    }
+  "publishConfig": {
+    "access": "public"
   }
 }
