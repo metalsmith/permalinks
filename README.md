@@ -36,14 +36,14 @@ The `pattern` can contain a reference to any piece of metadata associated with t
 
 If no pattern is provided, the files won't be remapped, but the `path` metadata key will still be set, so that you can use it for outputting links to files in the template.
 
-The `pattern` can also be a set as such:
+The `pattern` can also be set as such:
 
 ```js
 const Metalsmith = require('metalsmith');
 const permalinks = require('@metalsmith/permalinks');
 
-const metalsmith = new Metalsmith(__dirname).use(
-  permalinks({
+Metalsmith(__dirname)
+.use(permalinks({
     // original options would act as the keys of a `default` linkset,
     pattern: ':title',
     date: 'YYYY',
@@ -60,8 +60,7 @@ const metalsmith = new Metalsmith(__dirname).use(
         pattern: 'pages/:title'
       }
     ]
-  })
-);
+  }));
 ```
 
 ### Dates
@@ -145,7 +144,7 @@ There are plenty of other options on npm for transliteration and slugs. <https:/
 
 ### Relative Files
 
-When this plugin rewrites your files to be permalinked properly, it will also duplicate sibling files so that relative links like `/images/cat.gif` will be preserved nicely. You can turn this feature off by setting the `relative` option to `false`.
+When this plugin rewrites your files to be permalinked properly, it will also duplicate sibling files so that relative links like `css/style.css` will be preserved nicely. You can turn this feature off by setting the `relative` option to `false`.
 
 For example for this source directory:
 
