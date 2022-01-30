@@ -202,6 +202,13 @@ const fixtures = [
         }
       ]
     }
+  },
+  {
+    message: 'should handle optional path params properly',
+    folder: 'optional-path-parts',
+    options: {
+      pattern: ':date?/:title'
+    }
   }
 ]
 

@@ -28,7 +28,7 @@ yarn add @metalsmith/permalinks
 const Metalsmith = require('metalsmith')
 const permalinks = require('@metalsmith/permalinks')
 
-const metalsmith = new Metalsmith(__dirname).use(
+Metalsmith(__dirname).use(
   permalinks({
     pattern: ':title'
   })
@@ -65,6 +65,36 @@ Metalsmith(__dirname).use(
     ]
   })
 )
+```
+
+### Optional permalink pattern parts
+
+The pattern option can also contain optional placeholders with the syntax `:PROPERTY?`. If the property is not defined in a file's metadata, it will be replaced with an empty string `''`. For example the pattern `:category?/:title` applied to a source directory with 2 files:
+
+<table>
+  <tr>
+    <td>
+<pre><code>---
+title: With category
+category: category1
+---</pre></code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+<pre><code>---
+title: No category
+---</pre></code>
+    </td>
+  </tr>
+</table>
+
+would generate the file tree:
+
+```
+build
+├── category1/with-category.html
+└── no-category.html
 ```
 
 ### Dates
