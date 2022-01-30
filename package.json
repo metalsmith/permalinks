@@ -32,8 +32,8 @@
   "dependencies": {
     "debug": "^4.3.3",
     "moment": "^2.29.1",
-    "slugify": "^1.6.4",
-    "substitute": "https://github.com/segment-boneyard/substitute/archive/0.1.0.tar.gz"
+    "regexparam": "^2.0.0",
+    "slugify": "^1.6.4"
   },
   "devDependencies": {
     "assert-dir-equal": "^1.1.0",
