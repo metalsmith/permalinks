@@ -79,8 +79,6 @@ title: With category
 category: category1
 ---</pre></code>
     </td>
-  </tr>
-  <tr>
     <td>
 <pre><code>---
 title: No category
