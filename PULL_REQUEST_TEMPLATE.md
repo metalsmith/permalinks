@@ -10,4 +10,5 @@ Tell us what you've done
 - Updated documentation
 
 ---
+
 For **Added functionality** and **API changes** make sure the documentation has been updated accordingly.

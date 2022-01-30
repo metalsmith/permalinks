@@ -11,10 +11,13 @@ A Metalsmith plugin that applies a custom permalink pattern to files, and rename
 ## Installation
 
 NPM:
+
 ```bash
 npm install @metalsmith/permalinks
 ```
+
 Yarn:
+
 ```bash
 yarn add @metalsmith/permalinks
 ```
@@ -22,14 +25,14 @@ yarn add @metalsmith/permalinks
 ## Usage
 
 ```js
-const Metalsmith = require('metalsmith');
-const permalinks = require('@metalsmith/permalinks');
+const Metalsmith = require('metalsmith')
+const permalinks = require('@metalsmith/permalinks')
 
 const metalsmith = new Metalsmith(__dirname).use(
   permalinks({
     pattern: ':title'
   })
-);
+)
 ```
 
 The `pattern` can contain a reference to any piece of metadata associated with the file by using the `:PROPERTY` syntax for placeholders.
@@ -39,11 +42,11 @@ If no pattern is provided, the files won't be remapped, but the `path` metadata 
 The `pattern` can also be set as such:
 
 ```js
-const Metalsmith = require('metalsmith');
-const permalinks = require('@metalsmith/permalinks');
+const Metalsmith = require('metalsmith')
+const permalinks = require('@metalsmith/permalinks')
 
-Metalsmith(__dirname)
-.use(permalinks({
+Metalsmith(__dirname).use(
+  permalinks({
     // original options would act as the keys of a `default` linkset,
     pattern: ':title',
     date: 'YYYY',
@@ -60,7 +63,8 @@ Metalsmith(__dirname)
         pattern: 'pages/:title'
       }
     ]
-  }));
+  })
+)
 ```
 
 ### Dates
@@ -73,7 +77,7 @@ metalsmith.use(
     pattern: ':date/:title',
     date: 'YYYY'
   })
-);
+)
 ```
 
 It uses [moment.js](https://momentjs.com/docs/#/displaying/format/) to format the string.
@@ -93,7 +97,7 @@ metalsmith.use(
       lower: false
     }
   })
-);
+)
 ```
 
 The following makes everything snake-case but allows `'` to be converted to `-`
@@ -109,8 +113,9 @@ metalsmith.use(
       }
     }
   })
-);
+)
 ```
+
 #### Handling special characters
 
 If your pattern parts contain special characters like `:` or `=`, specifying `slug.strict` as `true` is a quick way to remove them:
@@ -123,7 +128,7 @@ metalsmith.use(
       strict: true
     }
   })
-);
+)
 ```
 
 #### Custom 'slug' function
@@ -137,7 +142,7 @@ metalsmith.use(
     pattern: ':title',
     slug: require('transliteration').slugify
   })
-);
+)
 ```
 
 There are plenty of other options on npm for transliteration and slugs. <https://www.npmjs.com/browse/keyword/transliteration>.
@@ -224,7 +229,7 @@ metalsmith.use(
   permalinks({
     indexFile: 'alt.html'
   })
-);
+)
 ```
 
 ### Ensure files have unique URIs
@@ -255,8 +260,8 @@ Where `uniqueFunction` takes the form:
 
 ```js
 const uniqueFunction = (path, files, filename, options) => {
-  return `path/index.html`;
-};
+  return `path/index.html`
+}
 ```
 
 ### Error when there's a URI conflict

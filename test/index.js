@@ -1,16 +1,15 @@
 /* eslint-env mocha */
 
-'use strict';
+'use strict'
 
-const assert = require('assert');
-const path = require('path');
-const rimraf = require('rimraf');
-const equal = require('assert-dir-equal');
-const Metalsmith = require('metalsmith');
-const transliteration = require('transliteration');
-const permalinks = require('..');
+const assert = require('assert')
+const path = require('path')
+const equal = require('assert-dir-equal')
+const Metalsmith = require('metalsmith')
+const transliteration = require('transliteration')
+const permalinks = require('..')
 
-const fixturesBase = path.join('test', 'fixtures');
+const fixturesBase = path.join('test', 'fixtures')
 const fixtures = [
   {
     message: 'should change files even with no pattern',
@@ -160,14 +159,14 @@ const fixtures = [
     folder: 'unique-function',
     options: {
       unique: (targetPath, files) => {
-        let target;
-        let postfix = '';
+        let target
+        let postfix = ''
         do {
-          target = path.join(`${targetPath}${postfix}.html`);
-          postfix = `${postfix}-a`;
-        } while (files[target]);
+          target = path.join(`${targetPath}${postfix}.html`)
+          postfix = `${postfix}-a`
+        } while (files[target])
 
-        return target;
+        return target
       },
       pattern: ':title'
     }
@@ -203,74 +202,69 @@ const fixtures = [
         }
       ]
     }
-  },
-
-];
+  }
+]
 
 describe('@metalsmith/permalinks', () => {
-  before(done => {
-    rimraf(path.join(fixturesBase, '*', 'build'), done);
-  });
-
   // Tests comparing build output against expected files
   fixtures.forEach(({ message, options, folder }) => {
-    const basePath = path.join(fixturesBase, folder);
-    it(message, done => {
+    const basePath = path.join(fixturesBase, folder)
+    it(message, (done) => {
       Metalsmith(basePath)
         .use(permalinks(options))
-        .build(err => {
-          if (err) return done(err);
-          equal(path.join(basePath, 'expected'), path.join(basePath, 'build'));
-          done();
-        });
-    });
-  });
+        .build((err) => {
+          if (err) return done(err)
+          equal(path.join(basePath, 'expected'), path.join(basePath, 'build'))
+          done()
+        })
+    })
+  })
 
   /// Tests with specific requirements
-  it('should replace any backslashes in paths with slashes', done => {
+  it('should replace any backslashes in paths with slashes', (done) => {
     Metalsmith(path.join(fixturesBase, 'backslashes'))
       .use(permalinks())
       .use((files, metalsmith, pluginDone) => {
-        Object.keys(files).forEach(file => {
-          assert.strictEqual(files[file].path.includes('\\'), false);
-        });
-        pluginDone();
-        done();
+        Object.keys(files).forEach((file) => {
+          assert.strictEqual(files[file].path.includes('\\'), false)
+        })
+        pluginDone()
+        done()
       })
-      .build(err => {
-        if (err) return done(err);
-      });
-  });
+      .build((err) => {
+        if (err) return done(err)
+      })
+  })
 
-  it('should use the resolve path for false values (not root)', done => {
+  it('should use the resolve path for false values (not root)', (done) => {
     Metalsmith(path.join(fixturesBase, 'falsy'))
       .use(permalinks(':falsy/:title'))
-      .use(files => {
-        Object.keys(files).forEach(file => {
-          assert.notStrictEqual(files[file].path.charAt(0), '/');
-        });
-        done();
+      .use((files) => {
+        Object.keys(files).forEach((file) => {
+          assert.notStrictEqual(files[file].path.charAt(0), '/')
+        })
+        done()
       })
-      .build(err => {
-        if (err) return done(err);
-      });
-  });
+      .build((err) => {
+        if (err) return done(err)
+      })
+  })
 
-  it('should use the resolve path for empty arrays (not root)', done => {
+  it('should use the resolve path for empty arrays (not root)', (done) => {
     Metalsmith(path.join(fixturesBase, 'empty-array'))
       .use(permalinks(':array/:title'))
-      .use(files => {
-        Object.keys(files).forEach(file => {
-          assert.notStrictEqual(files[file].path.charAt(0), '/');
-        });
-        done();
+      .use((files) => {
+        Object.keys(files).forEach((file) => {
+          assert.notStrictEqual(files[file].path.charAt(0), '/')
+        })
+        done()
       })
-      .build(err => {
-        if (err) return done(err);
-      });
-  });
+      .build((err) => {
+        if (err) return done(err)
+      })
+  })
 
-  it('should return an error when clashes happen', done => {
+  it('should return an error when clashes happen', (done) => {
     Metalsmith(path.join(fixturesBase, 'duplicate-urls'))
       .use(
         permalinks({
@@ -278,14 +272,14 @@ describe('@metalsmith/permalinks', () => {
           pattern: ':title'
         })
       )
-      .build(err => {
+      .build((err) => {
         assert.strictEqual(
           err,
           `Permalinks: Clash with another target file ${path.normalize(
             'one-post/index.html'
           )}`
-        );
-        done();
-      });
-  });
-});
+        )
+        done()
+      })
+  })
+})

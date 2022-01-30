@@ -47,7 +47,6 @@
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",
     "prettier": "^2.5.1",
-    "rimraf": "^3.0.2",
     "transliteration": "^2.2.0"
   },
   "peerDependencies": {
