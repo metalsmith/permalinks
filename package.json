@@ -12,7 +12,7 @@
     "url": "https://github.com/metalsmith/permalinks/issues"
   },
   "author": "Ian Storm Taylor (https://ianstormtaylor.com)",
-  "contributors": [
+  "maintainers": [
     "Kevin Van Lierde (https://webketje.com)"
   ],
   "repository": {
@@ -23,7 +23,7 @@
   "license": "MIT",
   "main": "lib/index.js",
   "scripts": {
-    "changelog": "auto-changelog -u --starting-date 2021-05-01 --commit-limit false --ignore-commit-pattern '(dev|Release|Merge)'",
+    "changelog": "auto-changelog -u --starting-version v2.4.0 --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release|Merge)'",
     "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
     "format": "prettier --write \"**/*.{yml,md,js,json}\"",
     "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
