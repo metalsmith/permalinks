@@ -34,9 +34,9 @@
     "release": "release-it ."
   },
   "dependencies": {
-    "debug": "^4.3.3",
+    "debug": "^4.3.4",
     "moment": "^2.29.1",
-    "regexparam": "^2.0.0",
+    "regexparam": "^2.0.1",
     "slugify": "^1.6.5"
   },
   "devDependencies": {
@@ -48,13 +48,13 @@
     "eslint-config-recommended": "^4.1.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
-    "metalsmith": "^2.3.0",
+    "metalsmith": "^2.5.0",
     "mocha": "^9.2.2",
     "nodemon": "^2.0.19",
     "nyc": "^15.1.0",
     "prettier": "^2.7.1",
     "release-it": "^15.2.0",
-    "transliteration": "^2.2.0"
+    "transliteration": "^2.3.5"
   },
   "peerDependencies": {
     "metalsmith": "^2.3.0"
