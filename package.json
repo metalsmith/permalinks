@@ -12,6 +12,9 @@
     "url": "https://github.com/metalsmith/permalinks/issues"
   },
   "author": "Ian Storm Taylor (https://ianstormtaylor.com)",
+  "contributors": [
+    "Kevin Van Lierde (https://webketje.com)"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/metalsmith/permalinks.git"
@@ -22,9 +25,10 @@
   "scripts": {
     "changelog": "auto-changelog -u --starting-date 2021-05-01 --commit-limit false --ignore-commit-pattern '(dev|Release|Merge)'",
     "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
-    "coveralls": "npm run coverage && cat ./coverage.info | coveralls",
     "format": "prettier --write \"**/*.{yml,md,js,json}\"",
-    "lint": "eslint --cache --fix-dry-run \"**/*.js\"",
+    "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
+    "lint": "eslint --fix .",
+    "lint:check": "eslint --fix-dry-run .",
     "dev": "nodemon --exec \"npm run lint && npm test\"",
     "test": "nyc mocha",
     "release": "release-it ."

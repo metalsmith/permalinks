@@ -344,8 +344,8 @@ To use this plugin with the Metalsmith CLI, add `@metalsmith/permalinks` to the 
 
 [npm-badge]: https://img.shields.io/npm/v/@metalsmith/permalinks.svg
 [npm-url]: https://www.npmjs.com/package/@metalsmith/permalinks
-[ci-badge]: https://app.travis-ci.com/metalsmith/permalinks.svg?branch=master
-[ci-url]: https://app.travis-ci.com/github/metalsmith/permalinks
+[ci-badge]: https://github.com/metalsmith/permalinks/actions/workflows/test.yml/badge.svg
+[ci-url]: https://github.com/metalsmith/permalinks/actions/workflows/test.yml
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-plugin-green.svg?longCache=true
 [metalsmith-url]: https://metalsmith.io/
 [codecov-badge]: https://img.shields.io/coveralls/github/metalsmith/permalinks
