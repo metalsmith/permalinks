@@ -7,6 +7,7 @@ const path = require('path')
 const equal = require('assert-dir-equal')
 const Metalsmith = require('metalsmith')
 const transliteration = require('transliteration')
+/* eslint-disable-next-line n/no-missing-require */
 const permalinks = require('..')
 
 const fixturesBase = path.join('test', 'fixtures')
