@@ -1,12 +1,10 @@
-'use strict'
+import path from 'path'
+import createDebug from 'debug'
+import moment from 'moment'
+import slugify from 'slugify'
+import route from 'regexparam'
 
-const path = require('path')
-const createDebug = require('debug')
 const debug = createDebug('@metalsmith/permalinks')
-const moment = require('moment')
-const slugify = require('slugify')
-const route = require('regexparam')
-
 const error = debug.extend('error')
 
 /**
@@ -253,7 +251,7 @@ const replace = (pattern, data, options) => {
  * @param {Options} options
  * @returns {import('metalsmith').Plugin}
  */
-function inititalizePermalinks(options) {
+function permalinks(options) {
   options = normalizeOptions(options)
 
   const { linksets } = options
@@ -302,8 +300,7 @@ function inititalizePermalinks(options) {
       return target
     }
 
-    const makeUnique =
-      typeof options.unique === 'function' ? options.unique : defaultUniquePath
+    const makeUnique = typeof options.unique === 'function' ? options.unique : defaultUniquePath
 
     Object.keys(files).forEach((file) => {
       const data = files[file]
@@ -330,10 +327,7 @@ function inititalizePermalinks(options) {
       }
 
       // Override the path with `permalink`  option
-      if (
-        Object.prototype.hasOwnProperty.call(data, 'permalink') &&
-        data.permalink !== false
-      ) {
+      if (Object.prototype.hasOwnProperty.call(data, 'permalink') && data.permalink !== false) {
         ppath = data.permalink
       }
 
@@ -369,4 +363,4 @@ function inititalizePermalinks(options) {
 }
 
 // Expose `plugin`
-module.exports = inititalizePermalinks
+export default permalinks

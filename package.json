@@ -21,7 +21,14 @@
   },
   "version": "2.4.1",
   "license": "MIT",
-  "main": "lib/index.js",
+  "source": "src/index.js",
+  "main": "lib/index.cjs",
+  "module": "lib/index.js",
+  "type": "module",
+  "exports": {
+    "import": "./lib/index.js",
+    "require": "./lib/index.cjs"
+  },
   "scripts": {
     "changelog": "auto-changelog -u --starting-version v2.4.0 --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release|Merge)'",
     "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
@@ -30,8 +37,10 @@
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
     "dev": "nodemon --exec \"npm run lint && npm test\"",
-    "test": "nyc mocha",
-    "release": "release-it ."
+    "release": "release-it .",
+    "build": "microbundle --target node --no-sourcemap -f cjs,esm --generateTypes=false",
+    "pretest": "npm run build",
+    "test": "nyc mocha"
   },
   "dependencies": {
     "debug": "^4.3.4",
@@ -49,6 +58,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "metalsmith": "^2.5.0",
+    "microbundle": "^0.15.1",
     "mocha": "^9.2.2",
     "nodemon": "^2.0.19",
     "nyc": "^15.1.0",

@@ -25,8 +25,12 @@ yarn add @metalsmith/permalinks
 ## Usage
 
 ```js
-const Metalsmith = require('metalsmith')
-const permalinks = require('@metalsmith/permalinks')
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import Metalsmith from 'metalsmith'
+import permalinks from '@metalsmith/permalinks'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 Metalsmith(__dirname).use(
   permalinks({
@@ -42,10 +46,7 @@ If no pattern is provided, the files won't be remapped, but the `path` metadata 
 The `pattern` can also be set as such:
 
 ```js
-const Metalsmith = require('metalsmith')
-const permalinks = require('@metalsmith/permalinks')
-
-Metalsmith(__dirname).use(
+metalsmith.use(
   permalinks({
     // original options would act as the keys of a `default` linkset,
     pattern: ':title',
@@ -91,8 +92,8 @@ would generate the file tree:
 
 ```
 build
-├── category1/with-category.html
-└── no-category.html
+├── category1/with-category/index.html
+└── no-category/index.html
 ```
 
 ### Dates
