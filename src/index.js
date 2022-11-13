@@ -279,8 +279,6 @@ function permalinks(options) {
     const debug = metalsmith.debug('@metalsmith/permalinks')
     debug.info('Running with options: %O', options)
 
-    setImmediate(done)
-
     const defaultUniquePath = (targetPath, filesObj, filename, opts) => {
       const { indexFile } = opts
       let target
@@ -357,6 +355,8 @@ function permalinks(options) {
     Object.keys(dupes).forEach((dupe) => {
       files[dupe] = dupes[dupe]
     })
+
+    done()
   }
 }
 
