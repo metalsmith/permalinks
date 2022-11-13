@@ -44,7 +44,6 @@
     "test": "nyc mocha"
   },
   "dependencies": {
-    "debug": "^4.3.4",
     "moment": "^2.29.1",
     "regexparam": "^2.0.1",
     "slugify": "^1.6.5"
@@ -58,7 +57,7 @@
     "eslint-config-recommended": "^4.1.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.5.1",
-    "metalsmith": "^2.5.0",
+    "metalsmith": "^2.5.1",
     "microbundle": "^0.15.1",
     "mocha": "^9.2.2",
     "nodemon": "^2.0.19",
@@ -68,7 +67,7 @@
     "transliteration": "^2.3.5"
   },
   "peerDependencies": {
-    "metalsmith": "^2.3.0"
+    "metalsmith": "^2.5.0"
   },
   "files": [
     "lib",

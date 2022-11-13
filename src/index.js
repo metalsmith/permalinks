@@ -1,11 +1,7 @@
 import path from 'path'
-import createDebug from 'debug'
 import moment from 'moment'
 import slugify from 'slugify'
 import route from 'regexparam'
-
-const debug = createDebug('@metalsmith/permalinks')
-const error = debug.extend('error')
 
 /**
  * [Slugify options](https://github.com/simov/slugify#options)
@@ -280,6 +276,9 @@ function permalinks(options) {
   }
 
   return function permalinks(files, metalsmith, done) {
+    const debug = metalsmith.debug('@metalsmith/permalinks')
+    debug.info('Running with options: %O', options)
+
     setImmediate(done)
 
     const defaultUniquePath = (targetPath, filesObj, filename, opts) => {
@@ -290,7 +289,7 @@ function permalinks(options) {
       do {
         target = path.join(`${targetPath}${postfix}`, indexFile || 'index.html')
         if (options.duplicatesFail && filesObj[target]) {
-          error(`Target: ${target} already has a file assigned`)
+          debug.error(`Target: ${target} already has a file assigned`)
           return done(`Permalinks: Clash with another target file ${target}`)
         }
 
@@ -302,57 +301,56 @@ function permalinks(options) {
 
     const makeUnique = typeof options.unique === 'function' ? options.unique : defaultUniquePath
 
-    Object.keys(files).forEach((file) => {
-      const data = files[file]
-      debug('checking file: %s', file)
+    Object.keys(files)
+      .filter((file) => html(file) && files[file].permalink !== false)
+      .forEach((file) => {
+        const data = files[file]
+        debug('checking file: %s', file)
 
-      if (!html(file)) return
-      if (data.permalink === false) return
+        const linkset = Object.assign({}, defaultLinkset, findLinkset(data))
+        debug('applying pattern: %s to file: %s', linkset.pattern, file)
 
-      const linkset = Object.assign({}, defaultLinkset, findLinkset(data))
-      debug('applying pattern: %s to file: %s', linkset.pattern, file)
+        let ppath = replace(linkset.pattern, data, linkset) || resolve(file)
 
-      let ppath = replace(linkset.pattern, data, linkset) || resolve(file)
+        let fam
+        switch (linkset.relative) {
+          case true:
+            fam = family(file, files)
+            break
+          case 'folder':
+            fam = folder(file, files)
+            break
+          default:
+          // nothing
+        }
 
-      let fam
-      switch (linkset.relative) {
-        case true:
-          fam = family(file, files)
-          break
-        case 'folder':
-          fam = folder(file, files)
-          break
-        default:
-        // nothing
-      }
+        // Override the path with `permalink`  option
+        if (Object.prototype.hasOwnProperty.call(data, 'permalink') && data.permalink !== false) {
+          ppath = data.permalink
+        }
 
-      // Override the path with `permalink`  option
-      if (Object.prototype.hasOwnProperty.call(data, 'permalink') && data.permalink !== false) {
-        ppath = data.permalink
-      }
+        const out = makeUnique(ppath, files, file, options)
 
-      const out = makeUnique(ppath, files, file, options)
-
-      // track duplicates for relative files to maintain references
-      const moved = {}
-      if (fam) {
-        for (const key in fam) {
-          if (Object.prototype.hasOwnProperty.call(fam, key)) {
-            const rel = path.posix.join(ppath, key)
-            dupes[rel] = fam[key]
-            moved[key] = rel
+        // track duplicates for relative files to maintain references
+        const moved = {}
+        if (fam) {
+          for (const key in fam) {
+            if (Object.prototype.hasOwnProperty.call(fam, key)) {
+              const rel = path.posix.join(ppath, key)
+              dupes[rel] = fam[key]
+              moved[key] = rel
+            }
           }
         }
-      }
 
-      // add to path data for use in links in templates
-      data.path = ppath === '.' ? '' : ppath.replace(/\\/g, '/')
+        // add to path data for use in links in templates
+        data.path = ppath === '.' ? '' : ppath.replace(/\\/g, '/')
 
-      relink(data, moved)
+        relink(data, moved)
 
-      delete files[file]
-      files[out] = data
-    })
+        delete files[file]
+        files[out] = data
+      })
 
     // add duplicates for relative files after processing to avoid double-dipping
     // note: `dupes` will be empty if `options.relative` is false
