@@ -48,7 +48,7 @@ const error = debug.extend('error')
  * @property {boolean|Function} [unique] Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
  * @property {boolean} [duplicatesFail=false] Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
  * @property {Linkset[]} [linksets] An array of additional linksets
- * @property {SlugifyOptions|slugFunction} [slug] [Slugify options](https://github.com/simov/slugify) or a custom slug function of the form `(pathpart) => string`
+ * @property {SlugifyOptions|slugFunction} [slug] {@link SlugifyOptions} or a custom slug function of the form `(pathpart) => string`
  */
 
 /** @type {Options} */
