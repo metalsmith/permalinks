@@ -39,7 +39,7 @@ import route from 'regexparam'
  * @typedef {Object} Options
  * @property {string} [pattern] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
  * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
- * @property {boolean|'folder'} [relative=true] When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
+ * @property {boolean|'folder'} [relative=true] _**(the relative option is deprecated and will be altered or removed in the next major version)**_ When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
  * @property {string} [indexFile='index.html'] Basename of the permalinked file (default: `index.html`)
  * @property {boolean|Function} [unique] Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
  * @property {boolean} [duplicatesFail=false] Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
@@ -278,6 +278,15 @@ function permalinks(options) {
   return function permalinks(files, metalsmith, done) {
     const debug = metalsmith.debug('@metalsmith/permalinks')
     debug.info('Running with options: %O', options)
+
+    if (options.relative || options.linksets.find((ls) => ls.relative)) {
+      debug.warn(
+        'The relative option is deprecated and its default value will be changed to false before being removed in the next major versions.'
+      )
+      debug.warn(
+        "To prepare for this change, use root-relative URL's in file contents or use a custom markdown renderer to prefix relative URI's."
+      )
+    }
 
     const defaultUniquePath = (targetPath, filesObj, filename, opts) => {
       const { indexFile } = opts
