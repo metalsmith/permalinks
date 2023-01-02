@@ -1,7 +1,7 @@
 import path from 'path'
 import moment from 'moment'
 import slugify from 'slugify'
-import route from 'regexparam'
+import * as route from 'regexparam'
 
 /**
  * [Slugify options](https://github.com/simov/slugify#options)
