@@ -38,37 +38,6 @@ const fixtures = [
     options: ':title'
   },
   {
-    message: 'should copy relative files to maintain references',
-    folder: 'relative',
-    options: undefined
-  },
-  {
-    message: 'should not copy relative files',
-    folder: 'no-relative',
-    options: {
-      relative: false
-    }
-  },
-
-  {
-    message: 'should copy relative files even with patterns',
-    folder: 'relative-pattern',
-    options: ':title'
-  },
-
-  {
-    message: 'should copy relative files once per output file',
-    folder: 'relative-multiple',
-    options: ':title'
-  },
-
-  {
-    message: 'should copy files in sibling folder',
-    folder: 'relative-folder',
-    options: { relative: 'folder' }
-  },
-
-  {
     message: 'should format a date',
     folder: 'date',
     options: ':date'
@@ -145,7 +114,6 @@ const fixtures = [
     message: 'should use custom slug function for linksets too',
     folder: 'slug-custom-function-linksets',
     options: {
-      relative: false,
       slug(str) {
         return str + str.length
       },
@@ -183,14 +151,14 @@ const fixtures = [
     folder: 'unique-urls',
     options: {
       pattern: ':title',
-      unique: true
+      duplicates: 'index'
     }
   },
   {
     message: 'should allow a custom function for unique urls',
     folder: 'unique-function',
     options: {
-      unique: (targetPath, files) => {
+      duplicates: (targetPath, files) => {
         let target
         let postfix = ''
         do {
@@ -280,7 +248,7 @@ describe('@metalsmith/permalinks', () => {
       .use(permalinks())
       .use((files, metalsmith, pluginDone) => {
         Object.keys(files).forEach((file) => {
-          assert.strictEqual(files[file].path.includes('\\'), false)
+          assert.strictEqual(files[file].permalink.includes('\\'), false)
         })
         pluginDone()
         done()
@@ -295,7 +263,7 @@ describe('@metalsmith/permalinks', () => {
       .use(permalinks(':falsy/:title'))
       .use((files) => {
         Object.keys(files).forEach((file) => {
-          assert.notStrictEqual(files[file].path.charAt(0), '/')
+          assert.notStrictEqual(files[file].permalink.charAt(0), '/')
         })
         done()
       })
@@ -304,12 +272,12 @@ describe('@metalsmith/permalinks', () => {
       })
   })
 
-  it('should allow an alternative indexFile', (done) => {
+  it('should allow an alternative directoryIndex', (done) => {
     const basepath = path.join(fixturesBase, 'custom-indexfile')
     Metalsmith(basepath)
       .env('DEBUG', process.env.DEBUG)
       .use(permalinks({
-        indexFile: 'alt.html',
+        directoryIndex: 'alt.html',
         duplicates: 'error'
       }))
       .build((err) => {
@@ -328,7 +296,7 @@ describe('@metalsmith/permalinks', () => {
       .env('DEBUG', process.env.DEBUG)
       .use(
         permalinks({
-          duplicatesFail: true,
+          duplicates: 'error',
           pattern: ':title'
         })
       )

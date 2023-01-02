@@ -64,13 +64,9 @@ const dupeHandlers = {
  * @typedef {Object} Options
  * @property {string} [pattern] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
  * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
- * @property {boolean|'folder'} [relative=true] _**[DEPRECATED]** - _will be defaulted to false and removed in the next major version_. When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
- * @property {string} [indexFile='index.html'] _**[DEPRECATED]** - _renamed to directoryIndex_. Basename of the permalinked file (default: `index.html`)
  * @property {string} [directoryIndex='index.html'] Basename of the permalinked file (default: `index.html`)
  * @property {boolean} [trailingSlash=false] Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
- * @property {boolean|Function} [unique] **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
- * @property {boolean} [duplicatesFail=false] **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
- * @property {'error'|'index'|'overwrite'|Function} [duplicates] How to handle duplicate target URI's.
+ * @property {'error'|'index'|'overwrite'|Function} [duplicates='error'] How to handle duplicate target URI's.
  * @property {Linkset[]} [linksets] An array of additional linksets
  * @property {SlugifyOptions|slugFunction} [slug] {@link SlugifyOptions} or a custom slug function of the form `(pathpart) => string`
  */
@@ -79,9 +75,10 @@ const dupeHandlers = {
 const defaultOptions = {
   date: 'YYYY/MM/DD',
   slug: { lower: true },
-  relative: true,
   trailingSlash: false,
-  linksets: []
+  linksets: [],
+  duplicates: 'error',
+  directoryIndex: 'index.html'
 }
 
 /**
@@ -100,23 +97,6 @@ function slugFn(options = defaultOptions.slug) {
 
     return slugify(text, Object.assign({}, defaultOptions.slug, options))
   }
-}
-
-/**
- * Re-links content
- *
- * @param  {import('metalsmith').File} data
- * @param  {Object} moved
- *
- * @return {Void}
- */
-const relink = (data, moved) => {
-  let content = data.contents.toString()
-  Object.keys(moved).forEach((to) => {
-    const from = moved[to]
-    content = content.replace(from, to)
-  })
-  data.contents = Buffer.from(content)
 }
 
 /**
@@ -147,95 +127,14 @@ const normalizeOptions = (options) => {
   }
   options = Object.assign({}, defaultOptions, options)
 
-  if (!options.duplicates) {
-    if (options.duplicatesFail) {
-      options.duplicates = dupeHandlers.error
-    } else if (options.unique === true) {
-      options.duplicates = dupeHandlers.index
-    } else if (typeof options.unique === 'function') {
-      options.duplicates = options.unique
-    } else {
-      options.duplicates = dupeHandlers.overwrite
-    }
-  } else if (Object.keys(dupeHandlers).includes(options.duplicates)) {
+  if (options.duplicates && Object.keys(dupeHandlers).includes(options.duplicates)) {
     options.duplicates = dupeHandlers[options.duplicates]
-  }
-
-  if (!options.directoryIndex) {
-    if (options.indexFile) {
-      options.directoryIndex = options.indexFile
-    } else {
-      options.directoryIndex = 'index.html'
-    }
   }
 
   options.slug = typeof options.slug === 'function' ? options.slug : slugFn(options.slug)
   options.date = format(options.date)
 
   return options
-}
-
-/**
- * Get a list of sibling and children files for a given `file` in `files`.
- *
- * @param {string} file
- * @param {Object} files
- * @return {Object}
- */
-const family = (file, files) => {
-  const ret = {}
-  let dir = path.dirname(file)
-
-  if (dir === '.') {
-    dir = ''
-  }
-
-  for (const key in files) {
-    /* istanbul ignore next */
-    if (key === file) continue
-    /* istanbul ignore next */
-    if (key.indexOf(dir) !== 0) continue
-    /* istanbul ignore next */
-    if (html(key)) continue
-
-    const rel = key.slice(dir.length)
-    ret[rel] = files[key]
-  }
-
-  return ret
-}
-
-/**
- * Get a list of files that exists in a folder named after `file` for a given `file` in `files`.
- *
- * @param {string} file
- * @param {Object} files
- * @return {Object}
- */
-const folder = (file, files) => {
-  const bn = path.basename(file, path.extname(file))
-  const family = {}
-  let dir = path.dirname(file)
-
-  if (dir === '.') {
-    dir = ''
-  }
-
-  const sharedPath = path.join(dir, bn, '/')
-
-  for (const otherFile in files) {
-    /* istanbul ignore next */
-    if (otherFile === file) continue
-    /* istanbul ignore next */
-    if (otherFile.indexOf(sharedPath) !== 0) continue
-    /* istanbul ignore next */
-    if (html(otherFile)) continue
-
-    const remainder = otherFile.slice(sharedPath.length)
-    family[remainder] = files[otherFile]
-  }
-
-  return family
 }
 
 /**
@@ -301,13 +200,11 @@ const replace = (pattern, data, options) => {
  */
 function permalinks(options) {
   const normalizedOptions = normalizeOptions(options)
-
   let primaryLinkset = normalizedOptions.linksets.find((ls) => Boolean(ls.isDefault))
   if (!primaryLinkset) {
     primaryLinkset = normalizedOptions
   }
 
-  const dupes = {}
   const findLinkset = (file) => {
     const set = normalizedOptions.linksets.find((ls) =>
       Object.keys(ls.match).some((key) => {
@@ -327,23 +224,11 @@ function permalinks(options) {
     const debug = metalsmith.debug('@metalsmith/permalinks')
     debug.info('Running with options: %O', normalizedOptions)
 
-    if (normalizedOptions.relative || normalizedOptions.linksets.find((ls) => ls.relative)) {
-      debug.warn(
-        'The relative option is deprecated and its default value will be changed to false before being removed in the next major versions.'
-      )
-      debug.warn(
-        "To prepare for this change, use root-relative URL's in file contents or use a custom markdown renderer to prefix relative URI's."
-      )
+    if (normalizedOptions.relative || normalizedOptions.linksets.find((ls) => ls && ls.relative)) {
+      return done(new Error('The "relative" option is no longer supported.'))
     }
 
     const makeUnique = normalizedOptions.duplicates
-    const map = new Map(Object.entries(normalizedOptions))
-    /* istanbul ignore next */
-    if (map.has('duplicatesFail') || map.has('unique')) {
-      debug.warn(
-        'The "duplicatesFail" and "unique" options are deprecated and have been merged into the option "duplicates". Please see https://github.com/metalsmith/permalinks#ensure-files-have-unique-uris for more info'
-      )
-    }
 
     Object.keys(files)
       .filter((file) => html(file) && files[file].permalink !== false)
@@ -371,18 +256,6 @@ function permalinks(options) {
               }
         let ppath = replace(linkset.pattern, data, opts) || resolve(file, normalizedOptions.directoryIndex)
 
-        let fam
-        switch (linkset.relative) {
-          case true:
-            fam = family(file, files)
-            break
-          case 'folder':
-            fam = folder(file, files)
-            break
-          default:
-          // nothing
-        }
-
         // Override the path with `permalink`  option
         if (Object.prototype.hasOwnProperty.call(data, 'permalink') && data.permalink !== false) {
           ppath = data.permalink
@@ -393,57 +266,23 @@ function permalinks(options) {
           return done(out)
         }
 
-        // track duplicates for relative files to maintain references
-        const moved = {}
-        if (fam) {
-          for (const key in fam) {
-            if (Object.prototype.hasOwnProperty.call(fam, key)) {
-              const rel = path.posix.join(ppath, key)
-              dupes[rel] = fam[key]
-              moved[key] = rel
-            }
-          }
-        }
-
         // add to permalink data for use in links in templates
         let permalink = ppath === '.' ? '' : ppath.replace(/\\/g, '/')
         if (normalizedOptions.trailingSlash) {
           permalink = path.posix.join(permalink, './')
         }
+
         // contrary to the 2.x "path" property, the permalink property does not override previously set file metadata
         if (!data.permalink) {
           data.permalink = permalink
         }
 
-        // this is only to ensure backwards-compat with 2.x, will be removed in 3.x
-        const descriptor = Object.getOwnPropertyDescriptor(data, 'path')
-        /* istanbul ignore next */
-        if (!descriptor || descriptor.configurable) {
-          Object.defineProperty(data, 'path', {
-            get() {
-              debug.warn('Accessing the permalink at "file.path" is deprecated, use "file.permalink" instead.')
-              return permalink
-            },
-            set(value) {
-              permalink = value
-            }
-          })
-        }
-
-        relink(data, moved)
-
         delete files[file]
         files[out] = data
       })
 
-    // add duplicates for relative files after processing to avoid double-dipping
-    // note: `dupes` will be empty if `options.relative` is false
-    Object.keys(dupes).forEach((dupe) => {
-      files[dupe] = dupes[dupe]
-    })
     done()
   }
 }
 
-// Expose `plugin`
 export default permalinks

@@ -176,50 +176,6 @@ metalsmith.use(
 
 There are plenty of other options on npm for transliteration and slugs. <https://www.npmjs.com/browse/keyword/transliteration>.
 
-### Relative Files
-
-When this plugin rewrites your files to be permalinked properly, it will also duplicate sibling files so that relative links like `css/style.css` will be preserved nicely. You can turn this feature off by setting the `relative` option to `false`.
-
-For example for this source directory:
-
-    src/
-      css/
-        style.css
-      post.html
-
-Here's what the build directory would look like with `relative` on:
-
-    build/
-      post/
-        index.html
-        css/
-          style.css
-      css/
-        style.css
-
-And here's with `relative` off:
-
-    build/
-      post/
-        index.html
-      css/
-        style.css
-
-`relative` can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
-
-For example using the `folder` strategy with this source directory:
-
-    src/
-      post.html
-      post/
-        image.jpg
-
-Here's what the build directory would look like with `relative` set to `folder`:
-
-    build/
-        index.html
-        image.jpg
-
 ### Skipping Permalinks for a file
 
 A file can be ignored by the permalinks plugin if you pass the `permalink: false` option to the yaml metadata of a file.
