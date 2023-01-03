@@ -83,13 +83,17 @@ export type Options = {
      */
     indexFile?: string;
     /**
-     * Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
+     * **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
      */
     unique?: boolean | Function;
     /**
-     * Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
+     * **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
      */
     duplicatesFail?: boolean;
+    /**
+     * How to handle duplicate target URI's.
+     */
+    duplicates?: 'error'|'index'|'overwrite'|Function
     /**
      * An array of additional linksets
      */

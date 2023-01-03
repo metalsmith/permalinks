@@ -263,49 +263,38 @@ metalsmith.use(
 
 ### Ensure files have unique URIs
 
-Use `unique: true` or provide a function to customise the URI when clashes occur.
-
-To automatially add `-1`, `-2`, etc. to the end of the URI to make it unique:
-
-```js
-metalsmith.use(
-  permalinks({
-    unique: true
-  })
-)
-```
-
-Provide your own function to create a unique URI:
+Normally you should take care to make sure your source files do not permalink to the same target.  
+When URI clashes occur nevertheless, the build will halt with an error stating the target file conflict.
 
 ```js
 metalsmith.use(
   permalinks({
-    unique: uniqueFunction
+    duplicates: 'error'
   })
 )
 ```
 
-Where `uniqueFunction` takes the form:
+There are 3 other possible values for the `duplicates` option: `index` will add an `-<index>` suffix to other files with the same target URI, , `overwrite` will silently overwrite previous files with the same target URI.
+
+The third possibility is to provide your own function to handle duplicates, with the signature:
 
 ```js
-const uniqueFunction = (path, files, filename, options) => {
-  return `path/index.html`
+function paginateDupes(targetPath, files, filename, options) => {
+  let target,
+    counter = 0,
+    postfix = ''
+  while (files[target]) {
+    postfix = `/${++counter}`
+    target = path.join(`${targetPath}${postfix}`, options.indexFile)
+  }
+  return target
 }
 ```
 
-### Error when there's a URI conflict
+Return an error in the custom duplicates handler to halt the build.  
+The example above is a variant of the `index` value, where 2 files targeting the URI `gallery` will be written to `gallery/1/index.html` and `gallery/2/index.html`.
 
-When URI clashes occur, the build will halt with an error stating the target file conflict.
-
-```js
-metalsmith.use(
-  permalinks({
-    duplicatesFail: true
-  })
-)
-```
-
-_Note_: This will not work if you've provided your own `unique` function.
+_Note_: The `duplicates` option combines the `unique` and `duplicatesFail` options of version < 2.4.1. Specifically, `duplicatesFail:true` maps to `duplicates:'error'`, `unique:true` maps to `duplicates:'index'`, and `unique:false` or `duplicatesFail:false` map to `duplicates:'overwrite'`.
 
 ### Debug
 

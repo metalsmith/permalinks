@@ -294,6 +294,7 @@ describe('@metalsmith/permalinks', () => {
 
   it('should return an error when clashes happen', (done) => {
     Metalsmith(path.join(fixturesBase, 'duplicate-urls'))
+        .env('DEBUG', process.env.DEBUG)
       .use(
         permalinks({
           duplicatesFail: true,
@@ -302,7 +303,7 @@ describe('@metalsmith/permalinks', () => {
       )
       .build((err) => {
         assert.strictEqual(
-          err,
+          err.message,
           `Permalinks: Clash with another target file ${path.normalize(
             'one-post/index.html'
           )}`

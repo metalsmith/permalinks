@@ -3,6 +3,30 @@ import moment from 'moment'
 import slugify from 'slugify'
 import * as route from 'regexparam'
 
+const dupeHandlers = {
+  error(targetPath, filesObj, filename, opts) {
+    const target = path.join(targetPath, opts.indexFile)
+    if (filesObj[target]) {
+      //debug.error(`Target: ${target} already has a file assigned`)
+      return new Error(`Permalinks: Clash with another target file ${target}`)
+    }
+    return target
+  },
+  index(targetPath, filesObj, filename, opts) {
+    let target,
+      counter = 0,
+      postfix = ''
+    do {
+      target = path.join(`${targetPath}${postfix}`, opts.indexFile)
+      postfix = `-${++counter}`
+    } while (filesObj[target])
+    return target
+  },
+  overwrite(targetPath, filesObj, filename, opts) {
+    return path.join(targetPath, opts.indexFile)
+  }
+}
+
 /**
  * [Slugify options](https://github.com/simov/slugify#options)
  *
@@ -39,10 +63,11 @@ import * as route from 'regexparam'
  * @typedef {Object} Options
  * @property {string} [pattern] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
  * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
- * @property {boolean|'folder'} [relative=true] _**(the relative option is deprecated and will be altered or removed in the next major version)**_ When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
+ * @property {boolean|'folder'} [relative=true] _**[DEPRECATED]** - _will be altered or removed in the next major version_. When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
  * @property {string} [indexFile='index.html'] Basename of the permalinked file (default: `index.html`)
- * @property {boolean|Function} [unique] Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
- * @property {boolean} [duplicatesFail=false] Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
+ * @property {boolean|Function} [unique] **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
+ * @property {boolean} [duplicatesFail=false] **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
+ * @property {'error'|'index'|'overwrite'|Function} [duplicates] How to handle duplicate target URI's.
  * @property {Linkset[]} [linksets] An array of additional linksets
  * @property {SlugifyOptions|slugFunction} [slug] {@link SlugifyOptions} or a custom slug function of the form `(pathpart) => string`
  */
@@ -141,6 +166,18 @@ const normalizeOptions = (options) => {
     options.linksets = options.linksets.map(normalizeLinkset)
   }
 
+  if (!options.duplicates) {
+    if (options.duplicatesFail) {
+      options.duplicates = dupeHandlers.error
+    } else if (options.unique === true) {
+      options.duplicates = dupeHandlers.index
+    } else if (typeof options.unique === 'function') {
+      options.duplicates = options.unique
+    } else {
+      options.duplicates = dupeHandlers.overwrite
+    }
+  }
+
   return options
 }
 
@@ -210,7 +247,6 @@ const folder = (file, files) => {
 const resolve = (str) => {
   const base = path.basename(str, path.extname(str))
   let ret = path.dirname(str)
-
   if (base !== 'index') {
     ret = path.join(ret, base).replace(/\\/g, '/')
   }
@@ -304,25 +340,11 @@ function permalinks(options) {
       )
     }
 
-    const defaultUniquePath = (targetPath, filesObj, filename, opts) => {
-      const { indexFile } = opts
-      let target
-      let counter = 0
-      let postfix = ''
-      do {
-        target = path.join(`${targetPath}${postfix}`, indexFile || 'index.html')
-        if (options.duplicatesFail && filesObj[target]) {
-          debug.error(`Target: ${target} already has a file assigned`)
-          return done(`Permalinks: Clash with another target file ${target}`)
-        }
-
-        postfix = `-${++counter}`
-      } while (options.unique && filesObj[target])
-
-      return target
+    const makeUnique = options.duplicates
+    const map = new Map(Object.entries(options))
+    if (map.has('duplicatesFail') || map.has('unique')) {
+      debug.warn('The "duplicatesFail" and "unique" options are deprecated and have been merged into the option "duplicates". Please see https://github.com/metalsmith/permalinks#ensure-files-have-unique-uris for more info')
     }
-
-    const makeUnique = typeof options.unique === 'function' ? options.unique : defaultUniquePath
 
     Object.keys(files)
       .filter((file) => html(file) && files[file].permalink !== false)
@@ -354,6 +376,9 @@ function permalinks(options) {
         }
 
         const out = makeUnique(ppath, files, file, options)
+        if (out instanceof Error) {
+          return done(out)
+        }
 
         // track duplicates for relative files to maintain references
         const moved = {}
