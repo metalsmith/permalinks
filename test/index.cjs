@@ -317,32 +317,87 @@ describe('@metalsmith/permalinks', () => {
       })
   })
 
-  it('should set a permalink property on each processed file', done => {
-    const ms = Metalsmith(path.join(fixturesBase, 'no-relative'))
-      .env('DEBUG', process.env.DEBUG)
-      .ignore('**')
+  describe('sets a file.permalink property', () => {
+    let ms
+    beforeEach(() => {
+      ms = Metalsmith(path.join(fixturesBase, 'no-relative'))
+        .env('DEBUG', process.env.DEBUG)
+        .ignore('**')
+    })
 
-    const files = {
-      'test.html': {
-        contents: Buffer.from('Test'),
-        path: 'test.html'
-      },
-      [path.join('nested', 'test.html')]: {
-        contents: Buffer.from('Nested test')
+    it('on each processed file', done => {
+      const files = {
+        'test.html': {
+          contents: Buffer.from('Test'),
+          path: 'test.html'
+        },
+        [path.join('nested', 'test.html')]: {
+          contents: Buffer.from('Nested test')
+        }
       }
-    }
 
-    permalinks()(files, ms, (err) => {
-      if (err) done(err)
-      assert.deepStrictEqual(Object.values(files).map(f => f.permalink).sort(), [
-        'nested/test',
-        'test',
-      ])
-      assert.deepStrictEqual(Object.keys(files).sort(), [
-        'nested/test/index.html',
-        'test/index.html',
-      ].map(path.normalize))
-      done()
+      permalinks()(files, ms, (err) => {
+        if (err) done(err)
+        assert.deepStrictEqual(Object.values(files).map(f => f.permalink).sort(), [
+          'nested/test',
+          'test',
+        ])
+        assert.deepStrictEqual(Object.keys(files).sort(), [
+          'nested/test/index.html',
+          'test/index.html',
+        ].map(path.normalize))
+        done()
+      })
+    })
+
+    it('that supports adding a trailing slash to the permalink property', done => {
+      const ms = Metalsmith(path.join(fixturesBase, 'no-relative'))
+        .env('DEBUG', process.env.DEBUG)
+        .ignore('**')
+
+      const files = {
+        'test.html': {
+          contents: Buffer.from('Test'),
+        },
+        [path.join('nested', 'test.html')]: {
+          contents: Buffer.from('Nested test')
+        }
+      }
+
+      permalinks({
+        trailingSlash: true
+      })(files, ms, (err) => {
+        if (err) done(err)
+        assert.deepStrictEqual(Object.values(files).map(f => f.permalink).sort(), [
+          'nested/test/',
+          'test/',
+        ])
+        assert.deepStrictEqual(Object.keys(files).sort(), [
+          'nested/test/index.html',
+          'test/index.html',
+        ].map(path.normalize))
+        done()
+      })
+    })
+
+    it('but without overriding explicitly defined permalinks', done => {
+      const files = {
+        'test.html': {
+          contents: Buffer.from('Test'),
+          title: 'HelloWorld',
+          permalink: 'new/permalink/hehe'
+        }
+      }
+
+      permalinks({
+        trailingSlash: true,
+        pattern: ':title'
+      })(files, ms, (err) => {
+        if (err) done(err)
+        assert.strictEqual(Object.values(files)[0].permalink, 'new/permalink/hehe')
+        assert.strictEqual(Object.keys(files)[0], path.normalize('new/permalink/hehe/index.html'))
+        done()
+      })
     })
   })
 })

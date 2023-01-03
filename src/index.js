@@ -67,6 +67,7 @@ const dupeHandlers = {
  * @property {boolean|'folder'} [relative=true] _**[DEPRECATED]** - _will be defaulted to false and removed in the next major version_. When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
  * @property {string} [indexFile='index.html'] _**[DEPRECATED]** - _renamed to directoryIndex_. Basename of the permalinked file (default: `index.html`)
  * @property {string} [directoryIndex='index.html'] Basename of the permalinked file (default: `index.html`)
+ * @property {boolean} [trailingSlash=false] Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
  * @property {boolean|Function} [unique] **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
  * @property {boolean} [duplicatesFail=false] **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
  * @property {'error'|'index'|'overwrite'|Function} [duplicates] How to handle duplicate target URI's.
@@ -81,6 +82,7 @@ const defaultOptions = {
   slug: { lower: true },
   relative: true,
   indexFile: 'index.html',
+  trailingSlash: false,
   unique: false,
   duplicatesFail: false,
   linksets: []
@@ -180,8 +182,6 @@ const normalizeOptions = (options) => {
     }
   } else if (Object.keys(dupeHandlers).includes(options.duplicates)) {
     options.duplicates = dupeHandlers[options.duplicates]
-  } else {
-    options.duplicates = dupeHandlers.overwrite
   }
 
   if (options.indexFile && !options.directoryIndex) {
@@ -406,6 +406,10 @@ function permalinks(options) {
 
         // add to permalink data for use in links in templates
         let permalink = ppath === '.' ? '' : ppath.replace(/\\/g, '/')
+        if (options.trailingSlash) {
+          permalink = path.posix.join(permalink, './')
+        }
+        // contrary to the 2.x "path" property, the permalink property does not override previously set file metadata
         if (!data.permalink) {
           data.permalink = permalink
         }
@@ -419,6 +423,7 @@ function permalinks(options) {
               return permalink
             },
             set(value) {
+              /* istanbul ignore next */
               permalink = value
             }
           })

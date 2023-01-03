@@ -75,7 +75,7 @@ export type Options = {
      */
     date?: string;
     /**
-     * _**[DEPRECATED]** - _will be defaulted to false and removed in the next major version_. When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
+     * **[DEPRECATED]** - _will be defaulted to false and removed in the next major version_. When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
      */
     relative?: boolean | 'folder';
     /**
@@ -86,6 +86,10 @@ export type Options = {
      * Basename of the permalinked file (default: `index.html`)
      */
     directoryIndex?: string;
+    /**
+     * Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
+     */
+    trailingSlash?: boolean;
     /**
      * **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
      */
