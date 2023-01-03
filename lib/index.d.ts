@@ -75,13 +75,17 @@ export type Options = {
      */
     date?: string;
     /**
-     * When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
+     * _**[DEPRECATED]** - _will be defaulted to false and removed in the next major version_. When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
      */
     relative?: boolean | 'folder';
     /**
-     * Basename of the permalinked file (default: `index.html`)
+     * **[DEPRECATED]** - _renamed to directoryIndex_. Basename of the permalinked file (default: `index.html`)
      */
     indexFile?: string;
+    /**
+     * Basename of the permalinked file (default: `index.html`)
+     */
+    directoryIndex?: string;
     /**
      * **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
      */

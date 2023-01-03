@@ -5,10 +5,10 @@ import * as route from 'regexparam'
 
 const dupeHandlers = {
   error(targetPath, filesObj, filename, opts) {
-    const target = path.join(targetPath, opts.indexFile)
+    const target = path.join(targetPath, opts.directoryIndex)
     const currentBaseName = path.basename(filename)
 
-    if (filesObj[target] && currentBaseName !== opts.indexFile) {
+    if (filesObj[target] && currentBaseName !== opts.directoryIndex) {
       return new Error(`Permalinks: Clash with another target file ${target}`)
     }
     return target
@@ -18,13 +18,13 @@ const dupeHandlers = {
       counter = 0,
       postfix = ''
     do {
-      target = path.join(`${targetPath}${postfix}`, opts.indexFile)
+      target = path.join(`${targetPath}${postfix}`, opts.directoryIndex)
       postfix = `-${++counter}`
     } while (filesObj[target])
     return target
   },
   overwrite(targetPath, filesObj, filename, opts) {
-    return path.join(targetPath, opts.indexFile)
+    return path.join(targetPath, opts.directoryIndex)
   }
 }
 
@@ -64,8 +64,9 @@ const dupeHandlers = {
  * @typedef {Object} Options
  * @property {string} [pattern] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
  * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
- * @property {boolean|'folder'} [relative=true] _**[DEPRECATED]** - _will be altered or removed in the next major version_. When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
- * @property {string} [indexFile='index.html'] Basename of the permalinked file (default: `index.html`)
+ * @property {boolean|'folder'} [relative=true] _**[DEPRECATED]** - _will be defaulted to false and removed in the next major version_. When `true` (by default), will duplicate sibling files so relative links keep working in resulting structure. Turn off by setting `false`. Can also be set to `folder`, which uses a strategy that considers files in folder as siblings if the folder is named after the html file.
+ * @property {string} [indexFile='index.html'] _**[DEPRECATED]** - _renamed to directoryIndex_. Basename of the permalinked file (default: `index.html`)
+ * @property {string} [directoryIndex='index.html'] Basename of the permalinked file (default: `index.html`)
  * @property {boolean|Function} [unique] **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to add a number to duplicate permalinks (default: `false`), or specify a custom duplicate handling callback of the form `(permalink, files, file, options) => string`
  * @property {boolean} [duplicatesFail=false] **[DEPRECATED]** - _use `duplicates` option instead_. Set to `true` to throw an error if multiple file path transforms result in the same permalink. `false` by default
  * @property {'error'|'index'|'overwrite'|Function} [duplicates] How to handle duplicate target URI's.
@@ -179,6 +180,12 @@ const normalizeOptions = (options) => {
     }
   } else if (Object.keys(dupeHandlers).includes(options.duplicates)) {
     options.duplicates = dupeHandlers[options.duplicates]
+  } else {
+    options.duplicates = dupeHandlers.overwrite
+  }
+
+  if (options.indexFile && !options.directoryIndex) {
+    options.directoryIndex = options.indexFile
   }
 
   return options
@@ -247,10 +254,10 @@ const folder = (file, files) => {
  * @param {String} str The path
  * @return {String}
  */
-const resolve = (str, indexFile = 'index.html') => {
+const resolve = (str, directoryIndex = 'index.html') => {
   const base = path.basename(str, path.extname(str))
   let ret = path.dirname(str)
-  if (base !== path.basename(indexFile, path.extname(indexFile))) {
+  if (base !== path.basename(directoryIndex, path.extname(directoryIndex))) {
     ret = path.join(ret, base).replace(/\\/g, '/')
   }
 
@@ -361,7 +368,7 @@ function permalinks(options) {
 
         debug('applying pattern: %s to file: %s', linkset.pattern, file)
 
-        let ppath = replace(linkset.pattern, data, linkset) || resolve(file, options.indexFile)
+        let ppath = replace(linkset.pattern, data, linkset) || resolve(file, options.directoryIndex)
 
         let fam
         switch (linkset.relative) {
