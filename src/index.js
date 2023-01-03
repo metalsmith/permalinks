@@ -6,8 +6,9 @@ import * as route from 'regexparam'
 const dupeHandlers = {
   error(targetPath, filesObj, filename, opts) {
     const target = path.join(targetPath, opts.indexFile)
-    if (filesObj[target]) {
-      //debug.error(`Target: ${target} already has a file assigned`)
+    const currentBaseName = path.basename(filename)
+
+    if (filesObj[target] && currentBaseName !== opts.indexFile) {
       return new Error(`Permalinks: Clash with another target file ${target}`)
     }
     return target
@@ -176,6 +177,8 @@ const normalizeOptions = (options) => {
     } else {
       options.duplicates = dupeHandlers.overwrite
     }
+  } else if (Object.keys(dupeHandlers).includes(options.duplicates)) {
+    options.duplicates = dupeHandlers[options.duplicates]
   }
 
   return options
@@ -244,10 +247,10 @@ const folder = (file, files) => {
  * @param {String} str The path
  * @return {String}
  */
-const resolve = (str) => {
+const resolve = (str, indexFile = 'index.html') => {
   const base = path.basename(str, path.extname(str))
   let ret = path.dirname(str)
-  if (base !== 'index') {
+  if (base !== path.basename(indexFile, path.extname(indexFile))) {
     ret = path.join(ret, base).replace(/\\/g, '/')
   }
 
@@ -358,7 +361,7 @@ function permalinks(options) {
 
         debug('applying pattern: %s to file: %s', linkset.pattern, file)
 
-        let ppath = replace(linkset.pattern, data, linkset) || resolve(file)
+        let ppath = replace(linkset.pattern, data, linkset) || resolve(file, options.indexFile)
 
         let fam
         switch (linkset.relative) {
@@ -377,7 +380,7 @@ function permalinks(options) {
           ppath = data.permalink
         }
 
-        const out = makeUnique(ppath, files, file, options)
+        const out = makeUnique(path.normalize(ppath), files, file, options)
         if (out instanceof Error) {
           return done(out)
         }

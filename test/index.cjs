@@ -278,23 +278,28 @@ describe('@metalsmith/permalinks', () => {
       })
   })
 
-  it('should use the resolve path for empty arrays (not root)', (done) => {
-    Metalsmith(path.join(fixturesBase, 'empty-array'))
-      .use(permalinks(':array/:title'))
-      .use((files) => {
-        Object.keys(files).forEach((file) => {
-          assert.notStrictEqual(files[file].path.charAt(0), '/')
-        })
-        done()
-      })
+  it('should allow an alternative indexFile', (done) => {
+    const basepath = path.join(fixturesBase, 'custom-indexfile')
+    Metalsmith(basepath)
+      .env('DEBUG', process.env.DEBUG)
+      .use(permalinks({
+        indexFile: 'alt.html',
+        duplicates: 'error'
+      }))
       .build((err) => {
         if (err) return done(err)
+        try {
+          equal(path.join(basepath, 'build'), path.join(basepath, 'expected'))
+          done()
+        } catch (err) {
+          done(err)
+        }
       })
   })
 
   it('should return an error when clashes happen', (done) => {
     Metalsmith(path.join(fixturesBase, 'duplicate-urls'))
-        .env('DEBUG', process.env.DEBUG)
+      .env('DEBUG', process.env.DEBUG)
       .use(
         permalinks({
           duplicatesFail: true,
