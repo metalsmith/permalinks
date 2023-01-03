@@ -31,7 +31,7 @@
     "require": "./lib/index.cjs"
   },
   "scripts": {
-    "changelog": "auto-changelog -u --starting-version v2.4.0 --commit-limit false --ignore-commit-pattern '^((dev|chore|ci):|Release|Merge)'",
+    "changelog": "auto-changelog -u --starting-version v2.4.0 --commit-limit false --ignore-commit-pattern '^((dev|chore|ci|test):|Release|Merge)'",
     "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
     "format": "prettier --write \"**/*.{yml,md,js,json}\"",
     "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
