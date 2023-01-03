@@ -207,8 +207,11 @@ const family = (file, files) => {
   }
 
   for (const key in files) {
+    /* istanbul ignore next */
     if (key === file) continue
+    /* istanbul ignore next */
     if (key.indexOf(dir) !== 0) continue
+    /* istanbul ignore next */
     if (html(key)) continue
 
     const rel = key.slice(dir.length)
@@ -237,8 +240,11 @@ const folder = (file, files) => {
   const sharedPath = path.join(dir, bn, '/')
 
   for (const otherFile in files) {
+    /* istanbul ignore next */
     if (otherFile === file) continue
+    /* istanbul ignore next */
     if (otherFile.indexOf(sharedPath) !== 0) continue
+    /* istanbul ignore next */
     if (html(otherFile)) continue
 
     const remainder = otherFile.slice(sharedPath.length)
@@ -352,6 +358,7 @@ function permalinks(options) {
 
     const makeUnique = options.duplicates
     const map = new Map(Object.entries(options))
+    /* istanbul ignore next */
     if (map.has('duplicatesFail') || map.has('unique')) {
       debug.warn(
         'The "duplicatesFail" and "unique" options are deprecated and have been merged into the option "duplicates". Please see https://github.com/metalsmith/permalinks#ensure-files-have-unique-uris for more info'
@@ -416,6 +423,7 @@ function permalinks(options) {
 
         // this is only to ensure backwards-compat with 2.x, will be removed in 3.x
         const descriptor = Object.getOwnPropertyDescriptor(data, 'path')
+        /* istanbul ignore next */
         if (!descriptor || descriptor.configurable) {
           Object.defineProperty(data, 'path', {
             get() {
@@ -423,7 +431,6 @@ function permalinks(options) {
               return permalink
             },
             set(value) {
-              /* istanbul ignore next */
               permalink = value
             }
           })

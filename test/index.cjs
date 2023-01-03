@@ -225,7 +225,17 @@ const fixtures = [
     options: {
       pattern: ':date?/:title'
     }
-  }
+  },
+  {
+    message: 'should match array values',
+    folder: 'array-values',
+    options: {
+      linksets: [{
+        pattern: ':collection?/:title',
+        match: { array: 1 }
+      }]
+    }
+  },
 ]
 
 describe('@metalsmith/permalinks', () => {
