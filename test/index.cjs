@@ -316,4 +316,33 @@ describe('@metalsmith/permalinks', () => {
         done()
       })
   })
+
+  it('should set a permalink property on each processed file', done => {
+    const ms = Metalsmith(path.join(fixturesBase, 'no-relative'))
+      .env('DEBUG', process.env.DEBUG)
+      .ignore('**')
+
+    const files = {
+      'test.html': {
+        contents: Buffer.from('Test'),
+        path: 'test.html'
+      },
+      [path.join('nested', 'test.html')]: {
+        contents: Buffer.from('Nested test')
+      }
+    }
+
+    permalinks()(files, ms, (err) => {
+      if (err) done(err)
+      assert.deepStrictEqual(Object.values(files).map(f => f.permalink).sort(), [
+        'nested/test',
+        'test',
+      ])
+      assert.deepStrictEqual(Object.keys(files).sort(), [
+        'nested/test/index.html',
+        'test/index.html',
+      ].map(path.normalize))
+      done()
+    })
+  })
 })

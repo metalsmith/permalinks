@@ -41,7 +41,7 @@ Metalsmith(__dirname).use(
 
 The `pattern` can contain a reference to any piece of metadata associated with the file by using the `:PROPERTY` syntax for placeholders.
 
-If no pattern is provided, the files won't be remapped, but the `path` metadata key will still be set, so that you can use it for outputting links to files in the template.
+If no pattern is provided, the files won't be remapped, but the `permalink` metadata key will still be set, so that you can use it for outputting links to files in the template.
 
 The `pattern` can also be set as such:
 

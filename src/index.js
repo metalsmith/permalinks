@@ -397,8 +397,25 @@ function permalinks(options) {
           }
         }
 
-        // add to path data for use in links in templates
-        data.path = ppath === '.' ? '' : ppath.replace(/\\/g, '/')
+        // add to permalink data for use in links in templates
+        let permalink = ppath === '.' ? '' : ppath.replace(/\\/g, '/')
+        if (!data.permalink) {
+          data.permalink = permalink
+        }
+
+        // this is only to ensure backwards-compat with 2.x, will be removed in 3.x
+        const descriptor = Object.getOwnPropertyDescriptor(data, 'path')
+        if (!descriptor || descriptor.configurable) {
+          Object.defineProperty(data, 'path', {
+            get() {
+              debug.warn('Accessing the permalink at "file.path" is deprecated, use "file.permalink" instead.')
+              return permalink
+            },
+            set(value) {
+              permalink = value
+            }
+          })
+        }
 
         relink(data, moved)
 
