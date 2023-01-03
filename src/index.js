@@ -343,7 +343,9 @@ function permalinks(options) {
     const makeUnique = options.duplicates
     const map = new Map(Object.entries(options))
     if (map.has('duplicatesFail') || map.has('unique')) {
-      debug.warn('The "duplicatesFail" and "unique" options are deprecated and have been merged into the option "duplicates". Please see https://github.com/metalsmith/permalinks#ensure-files-have-unique-uris for more info')
+      debug.warn(
+        'The "duplicatesFail" and "unique" options are deprecated and have been merged into the option "duplicates". Please see https://github.com/metalsmith/permalinks#ensure-files-have-unique-uris for more info'
+      )
     }
 
     Object.keys(files)
