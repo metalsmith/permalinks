@@ -271,8 +271,8 @@ To automatially add `-1`, `-2`, etc. to the end of the URI to make it unique:
 metalsmith.use(
   permalinks({
     unique: true
-  }
-);
+  })
+)
 ```
 
 Provide your own function to create a unique URI:
@@ -281,8 +281,8 @@ Provide your own function to create a unique URI:
 metalsmith.use(
   permalinks({
     unique: uniqueFunction
-  }
-);
+  })
+)
 ```
 
 Where `uniqueFunction` takes the form:
@@ -295,33 +295,27 @@ const uniqueFunction = (path, files, filename, options) => {
 
 ### Error when there's a URI conflict
 
-When URI when clashes occur, the build will halt with an error stating the target file conflict.
+When URI clashes occur, the build will halt with an error stating the target file conflict.
 
 ```js
 metalsmith.use(
   permalinks({
     duplicatesFail: true
-  }
-);
+  })
+)
 ```
 
 _Note_: This will not work if you've provided your own `unique` function.
 
 ### Debug
 
-To log debug output, set the `DEBUG` environment variable to `@metalsmith/permalinks`:
+To enable debug logs, set the `DEBUG` environment variable to `@metalsmith/permalinks`:
 
-Linux/Mac:
-
-```bash
-DEBUG=@metalsmith/permalinks
+```js
+metalsmith.env('DEBUG', '@metalsmith/permalinks*')
 ```
 
-Windows:
-
-```batch
-set "DEBUG=@metalsmith/permalinks"
-```
+Alternatively you can set `DEBUG` to `@metalsmith/*` to debug all Metalsmith core plugins.
 
 ### CLI usage
 
