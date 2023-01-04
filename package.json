@@ -19,7 +19,7 @@
     "type": "git",
     "url": "https://github.com/metalsmith/permalinks.git"
   },
-  "version": "2.4.1",
+  "version": "2.5.0",
   "license": "MIT",
   "source": "src/index.js",
   "main": "lib/index.cjs",
