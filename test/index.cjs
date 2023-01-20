@@ -142,6 +142,22 @@ const fixtures = [
     }
   },
   {
+    message: 'should use custom slug function for linksets too',
+    folder: 'slug-custom-function-linksets',
+    options: {
+      relative: false,
+      slug(str) {
+        return str + str.length
+      },
+      linksets: [
+          {
+              match: { collection: 'blog' },
+              pattern: 'blog/:title'
+          }
+      ]
+    }
+  },
+  {
     message: 'should accept options for slug module',
     folder: 'slug-options',
     options: {
@@ -247,7 +263,7 @@ describe('@metalsmith/permalinks', () => {
         .env('DEBUG', process.env.DEBUG)
         .use(permalinks(options))
         .build((err) => {
-          if (err) done(err)
+          if (err) return done(err)
           try {
             equal(path.join(basePath, 'expected'), path.join(basePath, 'build'))
             done()

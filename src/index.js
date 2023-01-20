@@ -24,7 +24,7 @@ const dupeHandlers = {
     return target
   },
   overwrite(targetPath, filesObj, filename, opts) {
-    return path.join(targetPath, opts.directoryIndex)
+    return path.join(targetPath || '', opts.directoryIndex)
   }
 }
 
@@ -77,22 +77,11 @@ const dupeHandlers = {
 
 /** @type {Options} */
 const defaultOptions = {
-  pattern: null,
   date: 'YYYY/MM/DD',
   slug: { lower: true },
   relative: true,
-  indexFile: 'index.html',
   trailingSlash: false,
-  unique: false,
-  duplicatesFail: false,
   linksets: []
-}
-
-const defaultLinkset = {
-  date: 'YYYY/MM/DD',
-  slug: { lower: true },
-  relative: true,
-  isDefault: false
 }
 
 /**
@@ -104,7 +93,7 @@ const defaultLinkset = {
  * @return {String}
  */
 function slugFn(options = defaultOptions.slug) {
-  return (text) => {
+  return function defaultSlugFn(text) {
     if (typeof options.extend === 'object' && options.extend !== null) {
       slugify.extend(options.extend)
     }
@@ -146,15 +135,6 @@ const html = (str) => path.extname(str) === '.html'
  */
 const format = (string) => (date) => moment(date).utc().format(string)
 
-const normalizeLinkset = (linkset) => {
-  linkset = Object.assign({}, defaultLinkset, linkset)
-  linkset.date = format(linkset.date)
-  if (typeof linkset.slug !== 'function') {
-    linkset.slug = slugFn(linkset.slug)
-  }
-  return linkset
-}
-
 /**
  * Normalize an options argument.
  *
@@ -165,10 +145,7 @@ const normalizeOptions = (options) => {
   if (typeof options === 'string') {
     options = { pattern: options }
   }
-  options = normalizeLinkset(Object.assign({}, defaultOptions, options))
-  if (Array.isArray(options.linksets)) {
-    options.linksets = options.linksets.map(normalizeLinkset)
-  }
+  options = Object.assign({}, defaultOptions, options)
 
   if (!options.duplicates) {
     if (options.duplicatesFail) {
@@ -184,9 +161,16 @@ const normalizeOptions = (options) => {
     options.duplicates = dupeHandlers[options.duplicates]
   }
 
-  if (options.indexFile && !options.directoryIndex) {
-    options.directoryIndex = options.indexFile
+  if (!options.directoryIndex) {
+    if (options.indexFile) {
+      options.directoryIndex = options.indexFile
+    } else {
+      options.directoryIndex = 'index.html'
+    }
   }
+
+  options.slug = typeof options.slug === 'function' ? options.slug : slugFn(options.slug)
+  options.date = format(options.date)
 
   return options
 }
@@ -316,21 +300,16 @@ const replace = (pattern, data, options) => {
  * @returns {import('metalsmith').Plugin}
  */
 function permalinks(options) {
-  options = normalizeOptions(options)
+  const normalizedOptions = normalizeOptions(options)
 
-  const { linksets } = options
-  let defaultLinkset = linksets.find((ls) => {
-    return Boolean(ls.isDefault)
-  })
-
-  if (!defaultLinkset) {
-    defaultLinkset = options
+  let primaryLinkset = normalizedOptions.linksets.find((ls) => Boolean(ls.isDefault))
+  if (!primaryLinkset) {
+    primaryLinkset = normalizedOptions
   }
 
   const dupes = {}
-
   const findLinkset = (file) => {
-    const set = linksets.find((ls) =>
+    const set = normalizedOptions.linksets.find((ls) =>
       Object.keys(ls.match).some((key) => {
         if (file[key] === ls.match[key]) {
           return true
@@ -340,14 +319,15 @@ function permalinks(options) {
         }
       })
     )
-    return set || defaultLinkset
+
+    return set ? set : primaryLinkset
   }
 
   return function permalinks(files, metalsmith, done) {
     const debug = metalsmith.debug('@metalsmith/permalinks')
-    debug.info('Running with options: %O', options)
+    debug.info('Running with options: %O', normalizedOptions)
 
-    if (options.relative || options.linksets.find((ls) => ls.relative)) {
+    if (normalizedOptions.relative || normalizedOptions.linksets.find((ls) => ls.relative)) {
       debug.warn(
         'The relative option is deprecated and its default value will be changed to false before being removed in the next major versions.'
       )
@@ -356,8 +336,8 @@ function permalinks(options) {
       )
     }
 
-    const makeUnique = options.duplicates
-    const map = new Map(Object.entries(options))
+    const makeUnique = normalizedOptions.duplicates
+    const map = new Map(Object.entries(normalizedOptions))
     /* istanbul ignore next */
     if (map.has('duplicatesFail') || map.has('unique')) {
       debug.warn(
@@ -375,7 +355,21 @@ function permalinks(options) {
 
         debug('applying pattern: %s to file: %s', linkset.pattern, file)
 
-        let ppath = replace(linkset.pattern, data, linkset) || resolve(file, options.directoryIndex)
+        const opts =
+          linkset === primaryLinkset
+            ? primaryLinkset
+            : {
+                ...linkset,
+                directoryIndex: normalizedOptions.directoryIndex,
+                slug:
+                  typeof linkset.slug === 'function'
+                    ? linkset.slug
+                    : typeof linkset.slug === 'object'
+                    ? slugFn(linkset.slug)
+                    : normalizedOptions.slug,
+                date: typeof linkset.date === 'string' ? format(linkset.date) : normalizedOptions.date
+              }
+        let ppath = replace(linkset.pattern, data, opts) || resolve(file, normalizedOptions.directoryIndex)
 
         let fam
         switch (linkset.relative) {
@@ -394,7 +388,7 @@ function permalinks(options) {
           ppath = data.permalink
         }
 
-        const out = makeUnique(path.normalize(ppath), files, file, options)
+        const out = makeUnique(path.normalize(ppath), files, file, normalizedOptions)
         if (out instanceof Error) {
           return done(out)
         }
@@ -413,7 +407,7 @@ function permalinks(options) {
 
         // add to permalink data for use in links in templates
         let permalink = ppath === '.' ? '' : ppath.replace(/\\/g, '/')
-        if (options.trailingSlash) {
+        if (normalizedOptions.trailingSlash) {
           permalink = path.posix.join(permalink, './')
         }
         // contrary to the 2.x "path" property, the permalink property does not override previously set file metadata
