@@ -258,6 +258,7 @@ describe('@metalsmith/permalinks', () => {
       })
   })
 
+  // this test was probably added to address an oddity in regexparam library path handling related to having a leading slash
   it('should use the resolve path for false values (not root)', (done) => {
     Metalsmith(path.join(fixturesBase, 'falsy'))
       .use(permalinks(':falsy/:title'))
@@ -269,6 +270,21 @@ describe('@metalsmith/permalinks', () => {
       })
       .build((err) => {
         if (err) return done(err)
+      })
+  })
+
+  // better to error the build and make users aware of an anti-pattern,
+  // than silently strip/replace the invalid chars and let them follow bad practice
+  it('should error when encountering invalid filepath characters after permalink pattern resolution', done => {
+    Metalsmith(path.join(fixturesBase, 'invalid-filename-chars'))
+      .use(permalinks(':title'))
+      .build((err) => {
+          try {
+            assert.strictEqual(err.message, 'Filepath "post.html" contains invalid filepath characters (one of :|<>"*?) after resolving as linkset pattern ":title"')
+            done()
+          } catch (err) {
+            done(err)
+          }
       })
   })
 

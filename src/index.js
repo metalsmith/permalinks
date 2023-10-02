@@ -256,6 +256,14 @@ function permalinks(options) {
               }
         let ppath = replace(linkset.pattern, data, opts) || resolve(file, normalizedOptions.directoryIndex)
 
+        // invalid on Windows, but best practice not to use them anyway
+        const invalidFilepathChars = /\||:|<|>|\*|\?|"/
+        if (invalidFilepathChars.test(ppath)) {
+          const msg = `Filepath "${file}" contains invalid filepath characters (one of :|<>"*?) after resolving as linkset pattern "${linkset.pattern}"`
+          debug.error(msg)
+          done(new Error(msg))
+        }
+
         // Override the path with `permalink`  option
         if (Object.prototype.hasOwnProperty.call(data, 'permalink') && data.permalink !== false) {
           ppath = data.permalink
