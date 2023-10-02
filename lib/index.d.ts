@@ -67,7 +67,8 @@ export type Linkset = {
  */
 export type Options = {
     /**
-     * A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
+     * A permalink pattern to transform file paths into, e.g. `blog/:date/:title`.
+     * @default ':dirname/:basename'
      */
     pattern?: string;
     /**

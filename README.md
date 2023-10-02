@@ -39,7 +39,8 @@ Metalsmith(__dirname).use(
 )
 ```
 
-The `pattern` can contain a reference to any piece of metadata associated with the file by using the `:PROPERTY` syntax for placeholders.
+The `pattern` can contain a reference to **any piece of metadata associated with the file** by using the `:PROPERTY` syntax for placeholders.
+By default, all files get a `:dirname/:basename` (+ directoryIndex = `/index.html`) pattern, i.e. the original filepath `blog/post1.html` becomes `blog/post1/index.html`. The `dirname` and `basename` values are automatically made available by @metalsmith/permalinks for the purpose of generating the permalink.
 
 If no pattern is provided, the files won't be remapped, but the `permalink` metadata key will still be set, so that you can use it for outputting links to files in the template.
 

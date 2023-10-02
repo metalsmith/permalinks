@@ -62,7 +62,7 @@ const dupeHandlers = {
  * `@metalsmith/permalinks` options & default linkset
  *
  * @typedef {Object} Options
- * @property {string} [pattern] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
+ * @property {string} [pattern=':dirname/:basename'] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`. Default is `:dirname/:basename`.
  * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
  * @property {string} [directoryIndex='index.html'] Basename of the permalinked file (default: `index.html`)
  * @property {boolean} [trailingSlash=false] Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
@@ -78,7 +78,8 @@ const defaultOptions = {
   trailingSlash: false,
   linksets: [],
   duplicates: 'error',
-  directoryIndex: 'index.html'
+  directoryIndex: 'index.html',
+  pattern: ':dirname/:basename'
 }
 
 /**
@@ -254,7 +255,17 @@ function permalinks(options) {
                     : normalizedOptions.slug,
                 date: typeof linkset.date === 'string' ? format(linkset.date) : normalizedOptions.date
               }
-        let ppath = replace(linkset.pattern, data, opts) || resolve(file, normalizedOptions.directoryIndex)
+        let ppath =
+          replace(
+            linkset.pattern,
+            {
+              ...data,
+              basename:
+                path.basename(file) === normalizedOptions.directoryIndex ? '' : path.basename(file, path.extname(file)),
+              dirname: path.dirname(file)
+            },
+            opts
+          ) || resolve(file, normalizedOptions.directoryIndex)
 
         // invalid on Windows, but best practice not to use them anyway
         const invalidFilepathChars = /\||:|<|>|\*|\?|"/
@@ -275,7 +286,7 @@ function permalinks(options) {
         }
 
         // add to permalink data for use in links in templates
-        let permalink = ppath === '.' ? '' : ppath.replace(/\\/g, '/')
+        let permalink = path.posix.join('.', ppath.replace(/\\/g, '/'))
         if (normalizedOptions.trailingSlash) {
           permalink = path.posix.join(permalink, './')
         }
