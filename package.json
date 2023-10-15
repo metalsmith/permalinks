@@ -44,7 +44,6 @@
     "test": "nyc mocha"
   },
   "dependencies": {
-    "moment": "^2.29.1",
     "regexparam": "^2.0.1",
     "slugify": "^1.6.5"
   },

@@ -110,7 +110,30 @@ metalsmith.use(
 )
 ```
 
-It uses [moment.js](https://momentjs.com/docs/#/displaying/format/) to format the string.
+Starting from v3 `@metalsmith/permalinks` no longer uses moment.js. A subset of date-formatting tokens relevant to site URI's are made available that are largely compatible with those defined at [moment.js](https://momentjs.com/docs/#/displaying/format/):
+
+| Token | Description                 | Examples                   |
+| ----- | --------------------------- | -------------------------- |
+| D     | Date numeric                | 1 2 ... 30 31              |
+| DD    | Date numeric zero-padded    | 01 02 ... 30 31            |
+| d     | Day of week numeric         | 0 1 ... 5                  |
+| dd    | Day of week 2-letter (\*)   | Su Mo ... Sa               |
+| ddd   | Day of week short (\*)      | Sun Mon ... Sat            |
+| dddd  | Day of week long (\*)       | Sunday Monday ... Saturday |
+| M     | Month numeric               | 1 2 ... 11 12              |
+| MM    | Month numeric zero-padded   | 01 02 ... 11 12            |
+| MMM   | Month short (\*)            | Jan, Feb                   |
+| MMMM  | Month full (\*)             | January, February          |
+| Q     | Quarter                     | 1 2 3 4                    |
+| YY    | Year 2 last digits          | 70, 24                     |
+| YYYY  | Year full                   | 1970, 2024                 |
+| W     | Week of year                | 1 2 ... 51 52              |
+| WW    | Week of year zero-padded    | 01 02 ... 51 52            |
+| x     | Unix milliseconds timestamp | 1697401520387              |
+| X     | Unix timestamp              | 1697401520                 |
+
+Tokens marked with (\*) use the [Node.js Intl API](https://nodejs.org/api/intl.html) which is not available by default in every Node.js distribution.  
+The `date` option can be a string of date-formatting tokens and will default to `en-US` for the locale, or an object in the format `{ format: 'YYYY', locale: 'en-US' }`. However, if your Node.js distribution does not have support for the Intl API, or the locale you specified is missing, the build will throw an error.
 
 ### Slug options
 

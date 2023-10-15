@@ -1,5 +1,5 @@
 import path from 'path'
-import moment from 'moment'
+import { dateFormatter as format } from './date.js'
 import slugify from 'slugify'
 import * as route from 'regexparam'
 
