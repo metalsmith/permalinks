@@ -28,12 +28,17 @@ const fixtures = [
     options: ':title'
   },
   {
-    message: 'should override path in any files with permalink option',
+    message: 'should override destination path in any files with permalink option',
     folder: 'permalink-override',
     options: ':title'
   },
   {
-    message: 'should accepts a shorthand string',
+    message: 'should remove/replace invalid path characters by default',
+    folder: 'permalink-invalid-chars',
+    options: ':title'
+  },
+  {
+    message: 'should accept a shorthand string',
     folder: 'shorthand',
     options: ':title'
   },
@@ -233,7 +238,7 @@ describe('@metalsmith/permalinks', () => {
         .build((err) => {
           if (err) return done(err)
           try {
-            equal(path.join(basePath, 'expected'), path.join(basePath, 'build'))
+            equal(path.join(basePath, 'build'), path.join(basePath, 'expected'))
             done()
           } catch (err) {
             done(err)

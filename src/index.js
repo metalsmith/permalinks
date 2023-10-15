@@ -71,10 +71,29 @@ const dupeHandlers = {
  * @property {SlugifyOptions|slugFunction} [slug] {@link SlugifyOptions} or a custom slug function of the form `(pathpart) => string`
  */
 
+// These are the invalid path chars on Windows, on *nix systems all are valid except forward slash.
+// However, it is highly unlikely that anyone would want these to appear in a file path and they can still be overridden if necessary
+const invalidPathChars = '[<>:"\'/\\|?*]'
+const defaultSlugifyRemoveChars = '[^\\w\\s$_+~.()!\\-@]+'
+const emptyStr = ''
+const dash = '-'
+
 /** @type {Options} */
 const defaultOptions = {
   date: 'YYYY/MM/DD',
-  slug: { lower: true },
+  slug: {
+    lower: true,
+    remove: new RegExp(`${defaultSlugifyRemoveChars}|${invalidPathChars}`, 'g'),
+    extend: {
+      // by default slugify strips these, resulting in word concatenation. Map these chars to dash to force a word break
+      ':': dash,
+      '|': dash,
+      '/': dash,
+      // by default slugify translates these to "smaller" & "greater", unwanted when a <html> tag is in the permalink
+      '<': emptyStr,
+      '>': emptyStr
+    }
+  },
   trailingSlash: false,
   linksets: [],
   duplicates: 'error',
@@ -91,12 +110,13 @@ const defaultOptions = {
  * @return {String}
  */
 function slugFn(options = defaultOptions.slug) {
-  return function defaultSlugFn(text) {
-    if (typeof options.extend === 'object' && options.extend !== null) {
-      slugify.extend(options.extend)
-    }
+  options = Object.assign({}, defaultOptions.slug, options)
+  if (typeof options.extend === 'object' && options.extend !== null) {
+    slugify.extend(options.extend)
+  }
 
-    return slugify(text, Object.assign({}, defaultOptions.slug, options))
+  return function defaultSlugFn(text) {
+    return slugify(text, options)
   }
 }
 
