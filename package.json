@@ -40,7 +40,7 @@
     "dev": "nodemon --exec \"npm run lint && npm test\"",
     "release": "release-it .",
     "build": "microbundle --target node --no-sourcemap -f cjs,esm --generateTypes=false",
-    "pretest": "npm run build",
+    "prepack": "npm run build",
     "test": "nyc mocha"
   },
   "dependencies": {
