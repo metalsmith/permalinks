@@ -1,14 +1,11 @@
-/* eslint-env mocha */
+/* eslint-env node, mocha */
 
-'use strict'
-
-const assert = require('assert')
-const path = require('path')
-const equal = require('assert-dir-equal')
-const Metalsmith = require('metalsmith')
-const transliteration = require('transliteration')
-/* eslint-disable-next-line n/no-missing-require */
-const permalinks = require('..')
+import assert from 'assert'
+import path from 'path'
+import equal from 'assert-dir-equal'
+import Metalsmith from 'metalsmith'
+import * as transliteration from 'transliteration'
+import permalinks from '../src/index.js'
 
 const fixturesBase = path.join('test', 'fixtures')
 const fixtures = [
@@ -59,15 +56,18 @@ const fixtures = [
     message: 'should format a linkset date with a custom formatter',
     folder: 'linkset-custom-date',
     options: {
-      linksets: [{
-        match: { foo: 34 },
-        pattern: 'foo/:date/:title',
-        date: 'YYYY/MM/DD'
-      }, {
-        match: { bar: 21 },
-        pattern: 'bar/:date/:title',
-        date: 'YYYY/MM'
-      }]
+      linksets: [
+        {
+          match: { foo: 34 },
+          pattern: 'foo/:date/:title',
+          date: 'YYYY/MM/DD'
+        },
+        {
+          match: { bar: 21 },
+          pattern: 'bar/:date/:title',
+          date: 'YYYY/MM'
+        }
+      ]
     }
   },
   {
@@ -123,10 +123,10 @@ const fixtures = [
         return str + str.length
       },
       linksets: [
-          {
-              match: { collection: 'blog' },
-              pattern: 'blog/:title'
-          }
+        {
+          match: { collection: 'blog' },
+          pattern: 'blog/:title'
+        }
       ]
     }
   },
@@ -177,8 +177,7 @@ const fixtures = [
     }
   },
   {
-    message:
-      'should overwrite default linkset options with specific linkset options',
+    message: 'should overwrite default linkset options with specific linkset options',
     folder: 'linkset-overwrite-default',
     options: {
       pattern: ':title',
@@ -191,8 +190,7 @@ const fixtures = [
     }
   },
   {
-    message:
-      'should apply the first linkset when multiple linksets match the same file',
+    message: 'should apply the first linkset when multiple linksets match the same file',
     folder: 'linkset-rule-precedence',
     options: {
       pattern: ':title',
@@ -219,12 +217,14 @@ const fixtures = [
     message: 'should match array values',
     folder: 'array-values',
     options: {
-      linksets: [{
-        pattern: ':collection?/:title',
-        match: { array: 1 }
-      }]
+      linksets: [
+        {
+          pattern: ':collection?/:title',
+          match: { array: 1 }
+        }
+      ]
     }
-  },
+  }
 ]
 
 describe('@metalsmith/permalinks', () => {
@@ -280,16 +280,19 @@ describe('@metalsmith/permalinks', () => {
 
   // better to error the build and make users aware of an anti-pattern,
   // than silently strip/replace the invalid chars and let them follow bad practice
-  it('should error when encountering invalid filepath characters after permalink pattern resolution', done => {
+  it('should error when encountering invalid filepath characters after permalink pattern resolution', (done) => {
     Metalsmith(path.join(fixturesBase, 'invalid-filename-chars'))
       .use(permalinks(':title'))
       .build((err) => {
-          try {
-            assert.strictEqual(err.message, 'Filepath "post.html" contains invalid filepath characters (one of :|<>"*?) after resolving as linkset pattern ":title"')
-            done()
-          } catch (err) {
-            done(err)
-          }
+        try {
+          assert.strictEqual(
+            err.message,
+            'Filepath "post.html" contains invalid filepath characters (one of :|<>"*?) after resolving as linkset pattern ":title"'
+          )
+          done()
+        } catch (err) {
+          done(err)
+        }
       })
   })
 
@@ -297,10 +300,12 @@ describe('@metalsmith/permalinks', () => {
     const basepath = path.join(fixturesBase, 'custom-indexfile')
     Metalsmith(basepath)
       .env('DEBUG', process.env.DEBUG)
-      .use(permalinks({
-        directoryIndex: 'alt.html',
-        duplicates: 'error'
-      }))
+      .use(
+        permalinks({
+          directoryIndex: 'alt.html',
+          duplicates: 'error'
+        })
+      )
       .build((err) => {
         if (err) return done(err)
         try {
@@ -324,9 +329,7 @@ describe('@metalsmith/permalinks', () => {
       .build((err) => {
         assert.strictEqual(
           err.message,
-          `Permalinks: Clash with another target file ${path.normalize(
-            'one-post/index.html'
-          )}`
+          `Permalinks: Clash with another target file ${path.normalize('one-post/index.html')}`
         )
         done()
       })
@@ -335,12 +338,10 @@ describe('@metalsmith/permalinks', () => {
   describe('sets a file.permalink property', () => {
     let ms
     beforeEach(() => {
-      ms = Metalsmith(path.join(fixturesBase, 'no-relative'))
-        .env('DEBUG', process.env.DEBUG)
-        .ignore('**')
+      ms = Metalsmith(path.join(fixturesBase, 'no-relative')).env('DEBUG', process.env.DEBUG).ignore('**')
     })
 
-    it('on each processed file', done => {
+    it('on each processed file', (done) => {
       const files = {
         'test.html': {
           contents: Buffer.from('Test'),
@@ -353,26 +354,26 @@ describe('@metalsmith/permalinks', () => {
 
       permalinks()(files, ms, (err) => {
         if (err) done(err)
-        assert.deepStrictEqual(Object.values(files).map(f => f.permalink).sort(), [
-          'nested/test',
-          'test',
-        ])
-        assert.deepStrictEqual(Object.keys(files).sort(), [
-          'nested/test/index.html',
-          'test/index.html',
-        ].map(path.normalize))
+        assert.deepStrictEqual(
+          Object.values(files)
+            .map((f) => f.permalink)
+            .sort(),
+          ['nested/test', 'test']
+        )
+        assert.deepStrictEqual(
+          Object.keys(files).sort(),
+          ['nested/test/index.html', 'test/index.html'].map(path.normalize)
+        )
         done()
       })
     })
 
-    it('that supports adding a trailing slash to the permalink property', done => {
-      const ms = Metalsmith(path.join(fixturesBase, 'no-relative'))
-        .env('DEBUG', process.env.DEBUG)
-        .ignore('**')
+    it('that supports adding a trailing slash to the permalink property', (done) => {
+      const ms = Metalsmith(path.join(fixturesBase, 'no-relative')).env('DEBUG', process.env.DEBUG).ignore('**')
 
       const files = {
         'test.html': {
-          contents: Buffer.from('Test'),
+          contents: Buffer.from('Test')
         },
         [path.join('nested', 'test.html')]: {
           contents: Buffer.from('Nested test')
@@ -383,19 +384,21 @@ describe('@metalsmith/permalinks', () => {
         trailingSlash: true
       })(files, ms, (err) => {
         if (err) done(err)
-        assert.deepStrictEqual(Object.values(files).map(f => f.permalink).sort(), [
-          'nested/test/',
-          'test/',
-        ])
-        assert.deepStrictEqual(Object.keys(files).sort(), [
-          'nested/test/index.html',
-          'test/index.html',
-        ].map(path.normalize))
+        assert.deepStrictEqual(
+          Object.values(files)
+            .map((f) => f.permalink)
+            .sort(),
+          ['nested/test/', 'test/']
+        )
+        assert.deepStrictEqual(
+          Object.keys(files).sort(),
+          ['nested/test/index.html', 'test/index.html'].map(path.normalize)
+        )
         done()
       })
     })
 
-    it('but without overriding explicitly defined permalinks', done => {
+    it('but without overriding explicitly defined permalinks', (done) => {
       const files = {
         'test.html': {
           contents: Buffer.from('Test'),
