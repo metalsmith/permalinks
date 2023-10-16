@@ -32,7 +32,7 @@
   },
   "scripts": {
     "changelog": "auto-changelog -u --starting-version v2.4.0 --commit-limit false --ignore-commit-pattern '^((dev|chore|ci|test):|Release|Merge)'",
-    "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
+    "coverage": "npm test && c8 report --reporter=text-lcov > ./coverage.info",
     "format": "prettier --write \"**/*.{yml,md,js,json}\"",
     "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
     "lint": "eslint --fix .",
@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "regexparam": "^2.0.1",
-    "slugify": "^1.6.5"
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "assert-dir-equal": "^1.1.0",
