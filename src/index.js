@@ -10,7 +10,7 @@ const dupeHandlers = {
     const currentBaseName = path.basename(filename)
 
     if (filesObj[target] && currentBaseName !== opts.directoryIndex) {
-      return new Error(`Permalinks: Clash with another target file ${target}`)
+      return new Error(`Destination path collision for source file "${filename}" with target "${target}"`)
     }
     return target
   },
@@ -64,7 +64,7 @@ const dupeHandlers = {
  * `@metalsmith/permalinks` options & default linkset
  *
  * @typedef {Object} Options
- * @property {string} [pattern=':dirname/:basename'] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`. Default is `:dirname/:basename`.
+ * @property {string} [pattern=':dirname?/:basename'] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`. Default is `:dirname?/:basename`.
  * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
  * @property {string} [directoryIndex='index.html'] Basename of the permalinked file (default: `index.html`)
  * @property {boolean} [trailingSlash=false] Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
@@ -82,7 +82,7 @@ const dash = '-'
 
 const defaultLinkset = {
   match: '**/*.html',
-  pattern: ':dirname/:basename',
+  pattern: ':dirname?/:basename',
   date: {
     format: 'YYYY/MM/DD',
     locale: 'en-US'
@@ -205,14 +205,15 @@ const replace = (pattern, data, options) => {
   const ret = {}
 
   for (let i = 0, key; (key = keys[i++]); ) {
-    const val = get(data, key.replace(/\0/g, '.'))
+    const keypath = key.replace(/\0/g, '.')
+    const val = get(data, keypath)
     const isOptional = remapped.match(`${key}\\?`)
     if (!val || (Array.isArray(val) && val.length === 0)) {
       if (isOptional) {
         ret[key] = ''
         continue
       }
-      return null
+      throw new Error(`Could not substitute ':${keypath}' in pattern '${pattern}', '${keypath}' is undefined`)
     }
     if (val instanceof Date) {
       ret[key] = options.date(val)
@@ -278,23 +279,30 @@ function permalinks(options) {
 
         debug('applying pattern: %s to file: %s', linkset.pattern, file)
 
-        let ppath =
-          replace(
-            linkset.pattern,
-            {
-              ...data,
-              basename:
-                path.basename(file) === normalizedOptions.directoryIndex ? '' : path.basename(file, path.extname(file)),
-              dirname: path.dirname(file)
-            },
-            { ...normalizedOptions, ...defaultLinkset, ...linkset }
-          ) || resolve(file, normalizedOptions.directoryIndex)
+        let ppath
+        try {
+          ppath =
+            replace(
+              linkset.pattern,
+              {
+                ...data,
+                basename:
+                  path.basename(file) === normalizedOptions.directoryIndex
+                    ? ''
+                    : path.basename(file, path.extname(file)),
+                dirname: path.dirname(file)
+              },
+              { ...normalizedOptions, ...defaultLinkset, ...linkset }
+            ) || resolve(file, normalizedOptions.directoryIndex)
+        } catch (err) {
+          return done(new Error(`${err.message} for file '${file}'`))
+        }
 
         // invalid on Windows, but best practice not to use them anyway
         if (new RegExp(invalidPathChars).test(ppath)) {
           const msg = `Filepath "${file}" contains invalid filepath characters (one of :|<>"*?) after resolving as linkset pattern "${linkset.pattern}"`
           debug.error(msg)
-          done(new Error(msg))
+          return done(new Error(msg))
         }
 
         // Override the path with `permalink`  option

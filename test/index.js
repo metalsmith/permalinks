@@ -17,7 +17,7 @@ const fixtures = [
   {
     message: 'should replace a pattern',
     folder: 'pattern',
-    options: { pattern: ':title' }
+    options: { pattern: ':title?' }
   },
   {
     message: 'should ignore any files with permalink equal to false option',
@@ -42,18 +42,18 @@ const fixtures = [
   {
     message: 'should accept a shorthand string',
     folder: 'shorthand',
-    options: ':title'
+    options: ':title?'
   },
   {
     message: 'should format a date',
     folder: 'date',
-    options: ':date'
+    options: ':date?'
   },
   {
     message: 'should format a date with a custom formatter',
     folder: 'custom-date',
     options: {
-      pattern: ':date',
+      pattern: ':date?',
       date: 'YYYY/MM'
     }
   },
@@ -301,6 +301,24 @@ describe('@metalsmith/permalinks', () => {
       })
   })
 
+  it('should error on missing, non-optional pattern parts', (done) => {
+    const basepath = path.join(fixturesBase, 'missing-pattern-parts')
+    Metalsmith(basepath)
+      .env('DEBUG', process.env.DEBUG)
+      .use(permalinks(':missing/:not-found'))
+      .build((err) => {
+        try {
+          assert.strictEqual(
+            err.message,
+            `Could not substitute ':missing' in pattern ':missing/:not-found', 'missing' is undefined for file 'index.html'`
+          )
+          done()
+        } catch (err) {
+          done(err)
+        }
+      })
+  })
+
   it('should allow an alternative directoryIndex', (done) => {
     const basepath = path.join(fixturesBase, 'custom-indexfile')
     Metalsmith(basepath)
@@ -332,11 +350,17 @@ describe('@metalsmith/permalinks', () => {
         })
       )
       .build((err) => {
-        assert.strictEqual(
-          err.message,
-          `Permalinks: Clash with another target file ${path.normalize('one-post/index.html')}`
-        )
-        done()
+        try {
+          assert.strictEqual(
+            err.message,
+            `Destination path collision for source file "two.html" with target "${path.normalize(
+              'one-post/index.html'
+            )}"`
+          )
+          done()
+        } catch (err) {
+          done(err)
+        }
       })
   })
 
