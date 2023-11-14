@@ -35,6 +35,11 @@ const fixtures = [
     options: ':title'
   },
   {
+    message: 'should support dot-notated properties',
+    folder: 'dot-notated-pattern-parts',
+    options: ':title/:nested.object.property.patternpart'
+  },
+  {
     message: 'should accept a shorthand string',
     folder: 'shorthand',
     options: ':title'

@@ -2,6 +2,7 @@ import path from 'path'
 import { dateFormatter as format } from './date.js'
 import slugify from 'slugify'
 import * as route from 'regexparam'
+import get from 'dlv'
 
 const dupeHandlers = {
   error(targetPath, filesObj, filename, opts) {
@@ -202,12 +203,15 @@ const resolve = (str, directoryIndex = 'index.html') => {
  */
 const replace = (pattern, data, options) => {
   if (!pattern) return null
-  const { keys } = route.parse(pattern)
+  // regexparam has logic that interprets a dot as start of an extension name
+  // we don't want this here, so we replace it temporarily with a NUL char
+  const remapped = pattern.replace(/\./g, '\0')
+  const { keys } = route.parse(remapped)
   const ret = {}
 
   for (let i = 0, key; (key = keys[i++]); ) {
-    const val = data[key]
-    const isOptional = pattern.match(`${key}\\?`)
+    const val = get(data, key.replace(/\0/g, '.'))
+    const isOptional = remapped.match(`${key}\\?`)
     if (!val || (Array.isArray(val) && val.length === 0)) {
       if (isOptional) {
         ret[key] = ''
@@ -222,7 +226,7 @@ const replace = (pattern, data, options) => {
     }
   }
 
-  const transformed = route.inject(pattern, ret)
+  const transformed = route.inject(remapped, ret)
 
   // handle absolute paths
   if (transformed.startsWith('/')) return transformed.slice(1)
