@@ -52,7 +52,9 @@ const dupeHandlers = {
  * Linkset definition
  *
  * @typedef {Object} Linkset
- * @property {Object.<string,*>} match An object whose key:value pairs will be used to match files and transform their permalinks according to the rules in this linkset
+ * @property {string|string[]|Object.<string,*>} [match="**\/*.html"]
+ * * A glob pattern or array of glob patterns passed to {@linkcode Metalsmith.match}, or an object whose `key:value` pairs
+ * will be used to match files when at least one `key:value` pair matches, and transform their permalinks according to the rules in this linkset.
  * @property {string} pattern A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
  * @property {SlugifyOptions|slugFunction} [slug] [Slugify options](https://github.com/simov/slugify) or a custom slug function of the form `(pathpart) => string`
  * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
@@ -79,6 +81,7 @@ const emptyStr = ''
 const dash = '-'
 
 const defaultLinkset = {
+  match: '**/*.html',
   pattern: ':dirname/:basename',
   date: {
     format: 'YYYY/MM/DD',
@@ -125,14 +128,6 @@ function slugFn(options = defaultOptions.slug) {
     return slugify(text, options)
   }
 }
-
-/**
- * Check whether a file is an HTML file.
- *
- * @param {string} str The path
- * @return {boolean}
- */
-const html = (str) => path.extname(str) === '.html'
 
 const normalizeLinkset = (linkset, defaultLs = defaultLinkset) => {
   linkset = { ...defaultLs, ...linkset }
@@ -244,19 +239,18 @@ function permalinks(options) {
   const normalizedOptions = normalizeOptions(options)
   const defaultLinkset = normalizedOptions.linksets[normalizedOptions.linksets.length - 1]
 
-  const findLinkset = (file) => {
-    const set = normalizedOptions.linksets.find(
-      (ls) =>
-        ls.match &&
-        Object.keys(ls.match).some((key) => {
-          if (file[key] === ls.match[key]) {
-            return true
-          }
-          if (Array.isArray(file[key]) && file[key].includes(ls.match[key])) {
-            return true
-          }
-        })
-    )
+  const findLinkset = (file, path, metalsmith) => {
+    const set = normalizedOptions.linksets.find((ls) => {
+      if (typeof ls.match === 'string' || Array.isArray(ls.match)) return !!metalsmith.match(ls.match, [path]).length
+      return Object.keys(ls.match).some((key) => {
+        if (file[key] === ls.match[key]) {
+          return true
+        }
+        if (Array.isArray(file[key]) && file[key].includes(ls.match[key])) {
+          return true
+        }
+      })
+    })
 
     if (!set) return defaultLinkset
     return set
@@ -271,14 +265,16 @@ function permalinks(options) {
     }
 
     const makeUnique = normalizedOptions.duplicates
+    const patternMatch = normalizedOptions.linksets[normalizedOptions.linksets.length - 1].match
 
-    Object.keys(files)
-      .filter((file) => html(file) && files[file].permalink !== false)
+    metalsmith
+      .match(patternMatch, Object.keys(files))
+      .filter((file) => files[file].permalink !== false)
       .forEach((file) => {
         const data = files[file]
         debug('checking file: %s', file)
 
-        const linkset = findLinkset(data)
+        const linkset = findLinkset(data, file, metalsmith)
 
         debug('applying pattern: %s to file: %s', linkset.pattern, file)
 

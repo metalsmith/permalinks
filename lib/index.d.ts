@@ -44,9 +44,15 @@ export type Linkset = {
      */
     isDefault?: boolean;
     /**
-     * An object whose key:value pairs will be used to match files and transform their permalinks according to the rules in this linkset
+     * A glob pattern or array of glob patterns passed to {@linkcode Metalsmith.match}, or an object whose `key:value` pairs
+     * will be used to match files when at least one `key:value` pair matches, and transform their permalinks according to the rules in this linkset.
+     * @default `**\/*.html`
+     * @example
+     * '**\/*.json' // only target JSON files
+     * ['**\/*.md', '**\/*.html'] // pass multiple glob patterns
+     * { product: true, service: true } // target files with either key:value match
      */
-    match: {
+    match: string | string[] | {
         [x: string]: any;
     };
     /**

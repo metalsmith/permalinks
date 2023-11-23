@@ -422,5 +422,39 @@ describe('@metalsmith/permalinks', () => {
         done()
       })
     })
+
+    it('should process files other than .html if pattern match is given', (done) => {
+      const basePath = path.join(fixturesBase, 'match-pattern-complex')
+      Metalsmith(basePath)
+        .env('DEBUG', process.env.DEBUG)
+        .use(
+          permalinks({
+            match: '**/*.json',
+            pattern: 'api/:basename',
+            directoryIndex: 'index.json'
+          })
+        )
+        .use(
+          permalinks({
+            match: ['**/*.md'],
+            pattern: ':title',
+            linksets: [
+              {
+                match: 'index.md',
+                pattern: 'api'
+              }
+            ]
+          })
+        )
+        .build((err) => {
+          if (err) return done(err)
+          try {
+            equal(path.join(basePath, 'build'), path.join(basePath, 'expected'))
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+    })
   })
 })
