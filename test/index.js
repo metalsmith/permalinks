@@ -30,6 +30,11 @@ const fixtures = [
     options: ':title'
   },
   {
+    message: 'should support dynamic permalink from front-matter metadata',
+    folder: 'permalink-frontmatter-dynamic',
+    options: undefined
+  },
+  {
     message: 'should remove/replace invalid path characters by default',
     folder: 'permalink-invalid-chars',
     options: ':title'

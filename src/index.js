@@ -172,32 +172,14 @@ const normalizeOptions = (options) => {
 }
 
 /**
- * Resolve a permalink path string from an existing file `path`.
- *
- * @param {String} str The path
- * @return {String}
- */
-const resolve = (str, directoryIndex = 'index.html') => {
-  const base = path.basename(str, path.extname(str))
-  let ret = path.dirname(str)
-  if (base !== path.basename(directoryIndex, path.extname(directoryIndex))) {
-    ret = path.join(ret, base).replace(/\\/g, '/')
-  }
-
-  return ret
-}
-
-/**
  * Replace a `pattern` with a file's `data`.
  *
- * @param {string} pattern (optional)
- * @param {Object} data
  * @param {Object} options
+ * @param {Object} data
  *
  * @return {Mixed} String or Null
  */
-const replace = (pattern, data, options) => {
-  if (!pattern) return null
+const replace = ({ pattern, ...options }, data) => {
   // regexparam has logic that interprets a dot as start of an extension name
   // we don't want this here, so we replace it temporarily with a NUL char
   const remapped = pattern.replace(/\./g, '\0')
@@ -222,8 +204,9 @@ const replace = (pattern, data, options) => {
     }
   }
 
-  const transformed = route.inject(remapped, ret)
-
+  let transformed = route.inject(remapped, ret)
+  if (path.basename(transformed) === path.basename(options.directoryIndex, path.extname(options.directoryIndex)))
+    transformed = path.dirname(transformed)
   // handle absolute paths
   if (transformed.startsWith('/')) return transformed.slice(1)
   return transformed
@@ -273,27 +256,28 @@ function permalinks(options) {
       .filter((file) => files[file].permalink !== false)
       .forEach((file) => {
         const data = files[file]
+        const hasOwnPermalinkDeclaration = !!data.permalink
         debug('checking file: %s', file)
 
         const linkset = findLinkset(data, file, metalsmith)
+        const permalinkTransformContext = { ...normalizedOptions, ...defaultLinkset, ...linkset }
+        if (hasOwnPermalinkDeclaration) permalinkTransformContext.pattern = data.permalink
 
         debug('applying pattern: %s to file: %s', linkset.pattern, file)
 
         let ppath
+
+        // Override the path with `permalink`  option. Before the replace call, so placeholders can also be used in front-matter
+        if (Object.prototype.hasOwnProperty.call(data, 'permalink')) {
+          ppath = data.permalink
+        }
+
         try {
-          ppath =
-            replace(
-              linkset.pattern,
-              {
-                ...data,
-                basename:
-                  path.basename(file) === normalizedOptions.directoryIndex
-                    ? ''
-                    : path.basename(file, path.extname(file)),
-                dirname: path.dirname(file)
-              },
-              { ...normalizedOptions, ...defaultLinkset, ...linkset }
-            ) || resolve(file, normalizedOptions.directoryIndex)
+          ppath = replace(permalinkTransformContext, {
+            ...data,
+            basename: path.basename(file, path.extname(file)),
+            dirname: path.dirname(file) === '.' ? '' : path.dirname(file)
+          })
         } catch (err) {
           return done(new Error(`${err.message} for file '${file}'`))
         }
@@ -303,11 +287,6 @@ function permalinks(options) {
           const msg = `Filepath "${file}" contains invalid filepath characters (one of :|<>"*?) after resolving as linkset pattern "${linkset.pattern}"`
           debug.error(msg)
           return done(new Error(msg))
-        }
-
-        // Override the path with `permalink`  option
-        if (Object.prototype.hasOwnProperty.call(data, 'permalink')) {
-          ppath = data.permalink
         }
 
         const out = makeUnique(path.normalize(ppath), files, file, normalizedOptions)
@@ -322,7 +301,7 @@ function permalinks(options) {
         }
 
         // contrary to the 2.x "path" property, the permalink property does not override previously set file metadata
-        if (!data.permalink) {
+        if (!hasOwnPermalinkDeclaration) {
           data.permalink = permalink
         }
 
