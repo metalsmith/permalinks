@@ -40,10 +40,6 @@ export type slugFunction = (filepath: string) => string;
  */
 export type Linkset = {
     /**
-     * Whether this linkset should be used as the default instead
-     */
-    isDefault?: boolean;
-    /**
      * A glob pattern or array of glob patterns passed to {@linkcode Metalsmith.match}, or an object whose `key:value` pairs
      * will be used to match files when at least one `key:value` pair matches, and transform their permalinks according to the rules in this linkset.
      * @default `**\/*.html`
@@ -56,15 +52,17 @@ export type Linkset = {
         [x: string]: any;
     };
     /**
-     * A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
+     * A permalink pattern to transform file paths into, e.g. `blog/:date/:title`.
+     * @default ':dirname?/:basename'
      */
-    pattern: string;
+    pattern?: string;
     /**
      * [Slugify options](https://github.com/simov/slugify) or a custom slug function of the form `(pathpart) => string`
      */
     slug?: SlugifyOptions | slugFunction;
     /**
-     * [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
+     * [Date format string](https://github.com/metalsmith/permalinks#dates) to transform Date link parts into, defaults to `YYYY/MM/DD`.
+     * @default 'YYYY/MM/DD'
      */
     date?: string;
 };
@@ -73,35 +71,25 @@ export type Linkset = {
  */
 export type Options = {
     /**
-     * A permalink pattern to transform file paths into, e.g. `blog/:date/:title`.
-     * @default ':dirname/:basename'
-     */
-    pattern?: string;
-    /**
-     * [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
-     */
-    date?: string;
-    /**
      * Basename of the permalinked file (default: `index.html`)
+     * @default 'index.html'
      */
     directoryIndex?: string;
     /**
-     * Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
+     * Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers (like `express.js`) which do not have a built-in rewrite module enabled.
+     * @default false
      */
     trailingSlash?: boolean;
     /**
      * How to handle duplicate target URI's.
+     * @default 'error'
      */
     duplicates?: 'error'|'index'|'overwrite'|Function
     /**
-     * An array of additional linksets
+     * An array of additional linksets.
      */
     linksets?: Linkset[];
-    /**
-     * {@link SlugifyOptions} or a custom slug function of the form `(pathpart) => string`
-     */
-    slug?: SlugifyOptions | slugFunction;
-};
+} & Linkset;
 /**
  * Metalsmith plugin that renames files so that they're permalinked properly
  * for a static site, aka that `about.html` becomes `about/index.html`.
