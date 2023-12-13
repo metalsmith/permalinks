@@ -2,3 +2,4 @@ test/fixtures/**
 coverage/**
 package-lock.json
 lib
+CHANGELOG.md
