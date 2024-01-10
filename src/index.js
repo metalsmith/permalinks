@@ -75,7 +75,7 @@ const dupeHandlers = {
 
 // These are the invalid path chars on Windows, on *nix systems all are valid except forward slash.
 // However, it is highly unlikely that anyone would want these to appear in a file path and they can still be overridden if necessary
-const invalidPathChars = '[<>:"\'|?*]'
+const invalidPathChars = '[<>:"|?*]'
 const defaultSlugifyRemoveChars = '[^\\w\\s$_+~.()!\\-@\\/]+'
 const emptyStr = ''
 const dash = '-'
