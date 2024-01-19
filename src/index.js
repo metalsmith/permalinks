@@ -39,7 +39,7 @@ const dupeHandlers = {
  * @property {boolean} [lower=true] convert to lower case, defaults to `true`
  * @property {boolean} [strict=false] strip special characters except replacement, defaults to `false`
  * @property {string} [locale] language code of the locale to use
- * @property {boolean} trim trim leading and trailing replacement chars, defaults to `true`
+ * @property {boolean} [trim=true] trim leading and trailing replacement chars, defaults to `true`
  */
 
 /**
@@ -57,7 +57,7 @@ const dupeHandlers = {
  * will be used to match files when at least one `key:value` pair matches, and transform their permalinks according to the rules in this linkset.
  * @property {string} pattern A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
  * @property {SlugifyOptions|slugFunction} [slug] [Slugify options](https://github.com/simov/slugify) or a custom slug function of the form `(pathpart) => string`
- * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
+ * @property {string} [date='YYYY/MM/DD'] [Date format string](https://github.com/metalsmith/permalinks/#date-formatting) to transform Date link parts into, defaults to `YYYY/MM/DD`.
  */
 
 /**
@@ -65,7 +65,7 @@ const dupeHandlers = {
  *
  * @typedef {Object} Options
  * @property {string} [pattern=':dirname?/:basename'] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`. Default is `:dirname?/:basename`.
- * @property {string} [date='YYYY/MM/DD'] [Moment.js format string](https://momentjs.com/docs/#/displaying/format/) to transform Date link parts into, defaults to `YYYY/MM/DD`.
+ * @property {string} [date='YYYY/MM/DD'] [Date format string](https://github.com/metalsmith/permalinks/#date-formatting) to transform Date link parts into, defaults to `YYYY/MM/DD`.
  * @property {string} [directoryIndex='index.html'] Basename of the permalinked file (default: `index.html`)
  * @property {boolean} [trailingSlash=false] Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
  * @property {'error'|'index'|'overwrite'|Function} [duplicates='error'] How to handle duplicate target URI's.
@@ -118,8 +118,8 @@ const defaultOptions = {
  *
  * @return {String}
  */
-function slugFn(options = defaultOptions.slug) {
-  options = Object.assign({}, defaultOptions.slug, options)
+function slugFn(options = defaultLinkset.slug) {
+  options = Object.assign({}, defaultLinkset.slug, options)
   if (typeof options.extend === 'object' && options.extend !== null) {
     slugify.extend(options.extend)
   }
