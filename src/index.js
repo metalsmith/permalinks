@@ -76,7 +76,7 @@ const dupeHandlers = {
 // These are the invalid path chars on Windows, on *nix systems all are valid except forward slash.
 // However, it is highly unlikely that anyone would want these to appear in a file path and they can still be overridden if necessary
 const invalidPathChars = '[<>:"|?*]'
-const defaultSlugifyRemoveChars = '[^\\w\\s$_+~.()!\\-@\\/]+'
+const defaultSlugifyRemoveChars = `[^\\w\\s$_+~.()!\\-@/]+`
 const emptyStr = ''
 const dash = '-'
 
@@ -94,7 +94,6 @@ const defaultLinkset = {
       // by default slugify strips these, resulting in word concatenation. Map these chars to dash to force a word break
       ':': dash,
       '|': dash,
-      '/': dash,
       // by default slugify translates these to "smaller" & "greater", unwanted when a <html> tag is in the permalink
       '<': emptyStr,
       '>': emptyStr
@@ -203,7 +202,6 @@ const replace = ({ pattern, ...options }, data) => {
       ret[key] = options.slug(val.toString())
     }
   }
-
   let transformed = route.inject(remapped, ret)
   if (path.basename(transformed) === path.basename(options.directoryIndex, path.extname(options.directoryIndex)))
     transformed = path.dirname(transformed)
