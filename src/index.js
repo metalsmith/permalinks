@@ -199,6 +199,8 @@ const replace = ({ pattern, ...options }, data) => {
     }
     if (val instanceof Date) {
       ret[key] = options.date(val)
+    } else if (key === 'dirname') {
+      ret[key] = val
     } else {
       ret[key] = options.slug(val.toString())
     }

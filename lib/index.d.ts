@@ -58,6 +58,12 @@ export type Linkset = {
     pattern?: string;
     /**
      * [Slugify options](https://github.com/simov/slugify) or a custom slug function of the form `(pathpart) => string`
+     * @default 
+     * {
+     *   lower: true, 
+     *   remove: /[^\\w\\s$_+~.()!\\-@/]|[<>:"|?*]/g,
+     *   extend: {':': '-', '|': '-', '/': '-', '<': '', '>': ''}
+     * }
      */
     slug?: SlugifyOptions | slugFunction;
     /**
