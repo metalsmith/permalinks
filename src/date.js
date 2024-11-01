@@ -82,24 +82,26 @@ const dateTokens = {
 
 const dateTokenKeys = Object.keys(dateTokens)
 
-export function dateFormatter(format, locale) {
-  return function formatDate(date) {
-    const result = []
-    while (format.length) {
-      let token
-      for (const tokenKey of dateTokenKeys) {
-        const match = format.match(tokenKey)
-        if (match && match.index === 0) {
-          token = match[0]
-          break
-        }
+function formatDate(date, format, locale) {
+  const result = []
+  while (format.length) {
+    let token
+    for (const tokenKey of dateTokenKeys) {
+      const match = format.match(tokenKey)
+      if (match && match.index === 0) {
+        token = match[0]
+        break
       }
-      const mappable = !!token
-      if (!token) token = format.slice(0, 1)
-      format = format.slice(token.length)
-      if (mappable) token = dateTokens[token](date, locale)
-      result.push(token)
     }
-    return result.join('')
+    const mappable = !!token
+    if (!token) token = format.slice(0, 1)
+    format = format.slice(token.length)
+    if (mappable) token = dateTokens[token](date, locale)
+    result.push(token)
   }
+  return result.join('')
+}
+
+export function dateFormatter(format, locale) {
+  return (date) => formatDate(date, format, locale)
 }
