@@ -1,5 +1,3 @@
-/* eslint-env node, mocha */
-
 import assert from 'assert'
 import path from 'path'
 import equal from 'assert-dir-equal'
