@@ -103,5 +103,7 @@ function formatDate(date, format, locale) {
 }
 
 export function dateFormatter(format, locale) {
-  return (date) => formatDate(date, format, locale)
+  return function formatDateFn(date) {
+    return formatDate(date, format, locale)
+  }
 }
