@@ -49,6 +49,12 @@ const dupeHandlers = {
  */
 
 /**
+ * @callback dateFunction
+ * @param {Date} date
+ * @returns {string} formattedDate
+ */
+
+/**
  * Linkset definition
  *
  * @typedef {Object} Linkset
@@ -57,7 +63,7 @@ const dupeHandlers = {
  * will be used to match files when at least one `key:value` pair matches, and transform their permalinks according to the rules in this linkset.
  * @property {string} pattern A permalink pattern to transform file paths into, e.g. `blog/:date/:title`
  * @property {SlugifyOptions|slugFunction} [slug] [Slugify options](https://github.com/simov/slugify) or a custom slug function of the form `(pathpart) => string`
- * @property {string} [date='YYYY/MM/DD'] [Date format string](https://github.com/metalsmith/permalinks/#date-formatting) to transform Date link parts into, defaults to `YYYY/MM/DD`.
+ * @property {string|dateFunction} [date='YYYY/MM/DD'] [Date format string](https://github.com/metalsmith/permalinks/#date-formatting) to transform Date link parts into, or a custom date formatting function. Defaults to `YYYY/MM/DD`.
  */
 
 /**
@@ -65,7 +71,7 @@ const dupeHandlers = {
  *
  * @typedef {Object} Options
  * @property {string} [pattern=':dirname?/:basename'] A permalink pattern to transform file paths into, e.g. `blog/:date/:title`. Default is `:dirname?/:basename`.
- * @property {string} [date='YYYY/MM/DD'] [Date format string](https://github.com/metalsmith/permalinks/#date-formatting) to transform Date link parts into, defaults to `YYYY/MM/DD`.
+ * @property {string} [date='YYYY/MM/DD'] [Date format string](https://github.com/metalsmith/permalinks/#date-formatting) to transform Date link parts into, or a custom date formatting function. Defaults to `YYYY/MM/DD`.
  * @property {string} [directoryIndex='index.html'] Basename of the permalinked file (default: `index.html`)
  * @property {boolean} [trailingSlash=false] Whether a trailing `/` should be added to the `file.permalink` property. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
  * @property {'error'|'index'|'overwrite'|Function} [duplicates='error'] How to handle duplicate target URI's.

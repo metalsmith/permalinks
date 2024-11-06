@@ -61,6 +61,16 @@ const fixtures = [
     }
   },
   {
+    message: 'should format a date with a custom function',
+    folder: 'date-fn',
+    options: {
+      pattern: ':date?',
+      date(v) {
+        return v.toDateString().toLowerCase().replace(/\W/g, '/')
+      }
+    }
+  },
+  {
     message: 'should format a linkset date with a custom formatter',
     folder: 'linkset-custom-date',
     options: {

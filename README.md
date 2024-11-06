@@ -266,6 +266,20 @@ Starting from v3 `@metalsmith/permalinks` no longer uses moment.js. A subset of 
 Tokens marked with (\*) use the [Node.js Intl API](https://nodejs.org/api/intl.html) which is not available by default in every Node.js distribution.  
 The `date` option can be a string of date-formatting tokens and will default to `en-US` for the locale, or an object in the format `{ format: 'YYYY', locale: 'en-US' }`. However, if your Node.js distribution does not have support for the Intl API, or the locale you specified is missing, the build will throw an error.
 
+If you need more customization you can also pass a date formatting function:
+
+```js
+metalsmith.use(
+  permalinks({
+    pattern: ':date',
+    // will result in sun/jan/01/2024/index.html for date 2024-01-01
+    date(value) {
+      return value.toDateString().toLowerCase().replace(/\W/g, '/')
+    }
+  })
+)
+```
+
 #### Slug options
 
 You can finetune how a pattern is processed by providing custom [slug](https://developer.mozilla.org/en-US/docs/Glossary/Slug) options.

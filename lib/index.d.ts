@@ -35,6 +35,7 @@ export type SlugifyOptions = {
     trim: boolean;
 };
 export type slugFunction = (filepath: string) => string;
+export type dateFunction = (date: Date) => string;
 /**
  * Linkset definition
  */
@@ -67,10 +68,10 @@ export type Linkset = {
      */
     slug?: SlugifyOptions | slugFunction;
     /**
-     * [Date format string](https://github.com/metalsmith/permalinks#dates) to transform Date link parts into, defaults to `YYYY/MM/DD`.
+     * [Date format string](https://github.com/metalsmith/permalinks#dates) to transform Date link parts into, or a custom date formatting function. Defaults to `YYYY/MM/DD`.
      * @default 'YYYY/MM/DD'
      */
-    date?: string;
+    date?: string | dateFunction;
 };
 /**
  * `@metalsmith/permalinks` options & default linkset
