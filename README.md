@@ -72,7 +72,9 @@ Every `permalinks()` instantiation supports the following options:
 - directoryIndex - traditionally `index.html`, but servers could be configured with alternatives. See [Overriding the default index.html file](#overriding-the-default-indexhtml-file)
 - trailingSlash - whether to add a trailing `/` so that the permalink becomes `blog/post/` instead of `blog/post`. Useful to avoid redirects on servers which do not have a built-in rewrite module enabled.
 - duplicates - what to do when 2 files have the same target destination. See [Ensure files have unique URI's](#ensure-files-have-unique-uris)
-- linksets
+- linksets, see [Defining linksets](#defining-linksets)
+
+Placeholder substitution will always `toString` the value. For example, when you have an `:array` placeholder and a file with front-matter `array: ['one','two']`, it will substitute into `'onetwo'`, but you can refer to the n<sup>th</sup> value with a dot-delimited keypath (eg `:array.0`). A boolean `false` will result in an error unless the placeholder is optional (it would then be an empty string = omitted), a boolean `true` will result in the string `'true'`.
 
 ### Matching files
 
