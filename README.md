@@ -74,7 +74,9 @@ Every `permalinks()` instantiation supports the following options:
 - duplicates - what to do when 2 files have the same target destination. See [Ensure files have unique URI's](#ensure-files-have-unique-uris)
 - linksets, see [Defining linksets](#defining-linksets)
 
-Placeholder substitution will always `toString` the value. For example, when you have an `:array` placeholder and a file with front-matter `array: ['one','two']`, it will substitute into `'onetwo'`, but you can refer to the n<sup>th</sup> value with a dot-delimited keypath (eg `:array.0`). A boolean `false` will result in an error unless the placeholder is optional (it would then be an empty string = omitted), a boolean `true` will result in the string `'true'`.
+Placeholder substitution will mostly `toString` the value. For example, when you have an `:array` placeholder and a file with front-matter `array: ['one','two']`, it will substitute into `'onetwo'`, but you can refer to the n<sup>th</sup> value with a dot-delimited keypath (eg `:array.0`).
+
+A boolean `false` will result in an error unless the placeholder is optional (it would then be an empty string = omitted), **but a boolean `true` will see the placeholder substituted with its key name** (eg `:placeholder` for a file with front-matter `placeholder: true` will become `placeholder`).
 
 ### Matching files
 
