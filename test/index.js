@@ -290,7 +290,7 @@ describe('@metalsmith/permalinks', () => {
         try {
           assert.strictEqual(
             err.message,
-            'Filepath "post.html" contains invalid filepath characters (one of :|<>"*?) after resolving as linkset pattern ":title"'
+            'Permalink ":title" for file "post.html" contains invalid filepath characters (one of :|<>"*?) after resolution with linkset pattern ":title"'
           )
           done()
         } catch (err) {

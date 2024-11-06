@@ -250,7 +250,7 @@ function permalinks(options) {
 
   return function permalinks(files, metalsmith, done) {
     const debug = metalsmith.debug('@metalsmith/permalinks')
-    debug.info('Running with options: %O', normalizedOptions)
+    debug.info('Running with options (normalized): %O', normalizedOptions)
 
     if (normalizedOptions.relative || normalizedOptions.linksets.find((ls) => ls && ls.relative)) {
       return done(new Error('The "relative" option is no longer supported.'))
@@ -265,13 +265,11 @@ function permalinks(options) {
       .forEach((file) => {
         const data = files[file]
         const hasOwnPermalinkDeclaration = !!data.permalink
-        debug('checking file: %s', file)
-
         const linkset = findLinkset(data, file, metalsmith)
         const permalinkTransformContext = { ...normalizedOptions, ...defaultLinkset, ...linkset }
         if (hasOwnPermalinkDeclaration) permalinkTransformContext.pattern = data.permalink
 
-        debug('applying pattern: %s to file: %s', linkset.pattern, file)
+        debug('Applying pattern: "%s" to file: "%s"', linkset.pattern, file)
 
         let ppath
 
@@ -292,7 +290,7 @@ function permalinks(options) {
 
         // invalid on Windows, but best practice not to use them anyway
         if (new RegExp(invalidPathChars).test(ppath)) {
-          const msg = `Filepath "${file}" contains invalid filepath characters (one of :|<>"*?) after resolving as linkset pattern "${linkset.pattern}"`
+          const msg = `Permalink "${ppath}" for file "${file}" contains invalid filepath characters (one of :|<>"*?) after resolution with linkset pattern "${linkset.pattern}"`
           debug.error(msg)
           return done(new Error(msg))
         }
@@ -315,6 +313,8 @@ function permalinks(options) {
 
         delete files[file]
         files[out] = data
+
+        debug('Moved file "%s" to "%s" (permalink = "%s")', file, out, data.permalink)
       })
 
     done()
