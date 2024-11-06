@@ -75,7 +75,7 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=14.14.0"
+    "node": ">=14.18.0"
   },
   "publishConfig": {
     "access": "public"
