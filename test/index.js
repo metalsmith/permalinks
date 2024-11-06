@@ -48,6 +48,13 @@ const fixtures = [
     options: ':title?'
   },
   {
+    message: 'should substitute booleans for their key name',
+    folder: 'booleans',
+    options: {
+      pattern: ':blog?/:news?/:category/:basename'
+    }
+  },
+  {
     message: 'should format a date',
     folder: 'date',
     options: ':date?'

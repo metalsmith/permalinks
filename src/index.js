@@ -208,7 +208,7 @@ const replace = ({ pattern, ...options }, data) => {
     } else if (key === 'dirname') {
       ret[key] = val
     } else {
-      ret[key] = options.slug(val.toString())
+      ret[key] = options.slug((typeof val === 'boolean' ? key : val).toString())
     }
   }
 
