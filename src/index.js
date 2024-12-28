@@ -305,9 +305,12 @@ function permalinks(options) {
       }
 
       // add to permalink data for use in links in templates
-      let permalink = path.posix.join('.', ppath.replace(/\\/g, '/'))
-      if (normalizedOptions.trailingSlash) {
-        permalink = path.posix.join(permalink, './')
+      const { join, normalize } = path.posix
+      // files matched for permalinking that are already at their destination (/index.html) have an empty string permalink ('')
+      // normalize('') results in '.', which we don't want here
+      let permalink = ppath.length ? normalize(ppath.replace(/\\/g, '/')) : ppath
+      if (permalink.length && normalizedOptions.trailingSlash) {
+        permalink = join(permalink, './')
       }
 
       // contrary to the 2.x "path" property, the permalink property does not override previously set file metadata
