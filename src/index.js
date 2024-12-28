@@ -268,10 +268,11 @@ function permalinks(options) {
       }
 
       const data = files[file]
-      const hasOwnPermalinkDeclaration = !!data.permalink
+      const fileSpecificPermalink = data.permalink
+      const hasOwnPermalinkDeclaration = !!fileSpecificPermalink
       const linkset = findLinkset(data, file, metalsmith)
       const permalinkTransformContext = { ...normalizedOptions, ...defaultLinkset, ...linkset }
-      if (hasOwnPermalinkDeclaration) permalinkTransformContext.pattern = data.permalink
+      if (hasOwnPermalinkDeclaration) permalinkTransformContext.pattern = fileSpecificPermalink
 
       debug('Applying pattern: "%s" to file: "%s"', linkset.pattern, file)
 
@@ -309,12 +310,12 @@ function permalinks(options) {
       // files matched for permalinking that are already at their destination (/index.html) have an empty string permalink ('')
       // normalize('') results in '.', which we don't want here
       let permalink = ppath.length ? normalize(ppath.replace(/\\/g, '/')) : ppath
-      if (permalink.length && normalizedOptions.trailingSlash) {
-        permalink = join(permalink, './')
-      }
-
-      // contrary to the 2.x "path" property, the permalink property does not override previously set file metadata
-      if (!hasOwnPermalinkDeclaration) {
+      // only rewrite data.permalink when a file-specific permalink contains :pattern placeholders
+      if (hasOwnPermalinkDeclaration) {
+        if (permalink !== fileSpecificPermalink) data.permalink = permalink
+      } else {
+        // only add trailingSlash when permalink !== ''
+        if (permalink && normalizedOptions.trailingSlash) permalink = join(permalink, './')
         data.permalink = permalink
       }
 
