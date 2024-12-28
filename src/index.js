@@ -259,63 +259,67 @@ function permalinks(options) {
     const makeUnique = normalizedOptions.duplicates
     const patternMatch = normalizedOptions.linksets[normalizedOptions.linksets.length - 1].match
 
-    metalsmith
-      .match(patternMatch, Object.keys(files))
-      .filter((file) => files[file].permalink !== false)
-      .forEach((file) => {
-        const data = files[file]
-        const hasOwnPermalinkDeclaration = !!data.permalink
-        const linkset = findLinkset(data, file, metalsmith)
-        const permalinkTransformContext = { ...normalizedOptions, ...defaultLinkset, ...linkset }
-        if (hasOwnPermalinkDeclaration) permalinkTransformContext.pattern = data.permalink
+    metalsmith.match(patternMatch, Object.keys(files)).forEach((file) => {
+      // when permalink is false, set the permalink property to the current file path and return
+      if (files[file].permalink === false) {
+        debug('Skipping permalink for file "%s"', file)
+        files[file].permalink = file
+        return
+      }
 
-        debug('Applying pattern: "%s" to file: "%s"', linkset.pattern, file)
+      const data = files[file]
+      const hasOwnPermalinkDeclaration = !!data.permalink
+      const linkset = findLinkset(data, file, metalsmith)
+      const permalinkTransformContext = { ...normalizedOptions, ...defaultLinkset, ...linkset }
+      if (hasOwnPermalinkDeclaration) permalinkTransformContext.pattern = data.permalink
 
-        let ppath
+      debug('Applying pattern: "%s" to file: "%s"', linkset.pattern, file)
 
-        // Override the path with `permalink`  option. Before the replace call, so placeholders can also be used in front-matter
-        if (Object.prototype.hasOwnProperty.call(data, 'permalink')) {
-          ppath = data.permalink
-        }
+      let ppath
 
-        try {
-          ppath = replace(permalinkTransformContext, {
-            ...data,
-            basename: path.basename(file, path.extname(file)),
-            dirname: path.dirname(file) === '.' ? '' : path.dirname(file)
-          })
-        } catch (err) {
-          return done(new Error(`${err.message} for file '${file}'`))
-        }
+      // Override the path with `permalink`  option. Before the replace call, so placeholders can also be used in front-matter
+      if (Object.prototype.hasOwnProperty.call(data, 'permalink')) {
+        ppath = data.permalink
+      }
 
-        // invalid on Windows, but best practice not to use them anyway
-        if (new RegExp(invalidPathChars).test(ppath)) {
-          const msg = `Permalink "${ppath}" for file "${file}" contains invalid filepath characters (one of :|<>"*?) after resolution with linkset pattern "${linkset.pattern}"`
-          debug.error(msg)
-          return done(new Error(msg))
-        }
+      try {
+        ppath = replace(permalinkTransformContext, {
+          ...data,
+          basename: path.basename(file, path.extname(file)),
+          dirname: path.dirname(file) === '.' ? '' : path.dirname(file)
+        })
+      } catch (err) {
+        return done(new Error(`${err.message} for file '${file}'`))
+      }
 
-        const out = makeUnique(path.normalize(ppath), files, file, normalizedOptions)
-        if (out instanceof Error) {
-          return done(out)
-        }
+      // invalid on Windows, but best practice not to use them anyway
+      if (new RegExp(invalidPathChars).test(ppath)) {
+        const msg = `Permalink "${ppath}" for file "${file}" contains invalid filepath characters (one of :|<>"*?) after resolution with linkset pattern "${linkset.pattern}"`
+        debug.error(msg)
+        return done(new Error(msg))
+      }
 
-        // add to permalink data for use in links in templates
-        let permalink = path.posix.join('.', ppath.replace(/\\/g, '/'))
-        if (normalizedOptions.trailingSlash) {
-          permalink = path.posix.join(permalink, './')
-        }
+      const out = makeUnique(path.normalize(ppath), files, file, normalizedOptions)
+      if (out instanceof Error) {
+        return done(out)
+      }
 
-        // contrary to the 2.x "path" property, the permalink property does not override previously set file metadata
-        if (!hasOwnPermalinkDeclaration) {
-          data.permalink = permalink
-        }
+      // add to permalink data for use in links in templates
+      let permalink = path.posix.join('.', ppath.replace(/\\/g, '/'))
+      if (normalizedOptions.trailingSlash) {
+        permalink = path.posix.join(permalink, './')
+      }
 
-        delete files[file]
-        files[out] = data
+      // contrary to the 2.x "path" property, the permalink property does not override previously set file metadata
+      if (!hasOwnPermalinkDeclaration) {
+        data.permalink = permalink
+      }
 
-        debug('Moved file "%s" to "%s" (permalink = "%s")', file, out, data.permalink)
-      })
+      delete files[file]
+      files[out] = data
+
+      debug('Moved file "%s" to "%s" (permalink = "%s")', file, out, data.permalink)
+    })
 
     done()
   }
