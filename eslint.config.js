@@ -6,7 +6,7 @@ import pluginNode from 'eslint-plugin-n'
 
 const config = [
   {
-    ignores: ['lib'],
+    ignores: ['lib/**'],
     languageOptions: {
       globals: {
         ...globals.node
