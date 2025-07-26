@@ -193,7 +193,8 @@ const replace = ({ pattern, ...options }, data) => {
   const ret = {}
 
   for (let i = 0, key; (key = keys[i++]); ) {
-    const keypath = key.replace(/\0/g, '.')
+    // eslint-disable-next-line no-control-regex
+    const keypath = key.replace(/\x00/g, '.')
     const val = get(data, keypath)
     const isOptional = remapped.match(`${key}\\?`)
     if (!val || (Array.isArray(val) && val.length === 0)) {
