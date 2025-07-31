@@ -184,9 +184,12 @@ const normalizeOptions = (options) => {
  * @param {Object} data
  *
  * @return {Mixed} String or Null
+ *
+ * @todo embed regexparam in this pkg: this method contains too many workarounds
+ * to patch regexparam's lack of customization
  */
 const replace = ({ pattern, ...options }, data) => {
-  // regexparam has logic that interprets a dot as start of an extension name
+  // regexparam.parse has logic that interprets a dot as start of an extension name
   // we don't want this here, so we replace it temporarily with a NUL char
   const remapped = pattern.replace(/\./g, '\0')
   const { keys } = route.parse(remapped)
@@ -213,8 +216,14 @@ const replace = ({ pattern, ...options }, data) => {
   }
 
   let transformed = route.inject(remapped, ret)
+
+  // avoid index/index permalink
   if (path.basename(transformed) === path.basename(options.directoryIndex, path.extname(options.directoryIndex)))
     transformed = path.dirname(transformed)
+
+  // restore dots that were not part of a :pattern.key keypath (and have not been restored yet)
+  transformed = transformed.replace(/\0/g, '.')
+
   // handle absolute paths
   if (transformed.startsWith('/')) return transformed.slice(1)
   return transformed
@@ -274,7 +283,7 @@ function permalinks(options) {
       const permalinkTransformContext = { ...normalizedOptions, ...defaultLinkset, ...linkset }
       if (hasOwnPermalinkDeclaration) permalinkTransformContext.pattern = fileSpecificPermalink
 
-      debug('Applying pattern: "%s" to file: "%s"', linkset.pattern, file)
+      debug('Applying pattern: "%s" to file: "%s"', permalinkTransformContext.pattern, file)
 
       let ppath
 
@@ -310,14 +319,10 @@ function permalinks(options) {
       // files matched for permalinking that are already at their destination (/index.html) have an empty string permalink ('')
       // normalize('') results in '.', which we don't want here
       let permalink = ppath.length ? normalize(ppath.replace(/\\/g, '/')) : ppath
-      // only rewrite data.permalink when a file-specific permalink contains :pattern placeholders
-      if (hasOwnPermalinkDeclaration) {
-        if (permalink !== fileSpecificPermalink) data.permalink = permalink
-      } else {
-        // only add trailingSlash when permalink !== ''
-        if (permalink && normalizedOptions.trailingSlash) permalink = join(permalink, './')
-        data.permalink = permalink
-      }
+
+      // only add trailingSlash when permalink !== '' (=directoryIndex) & not a fixed permalink
+      if (permalink && normalizedOptions.trailingSlash && !hasOwnPermalinkDeclaration) permalink = join(permalink, './')
+      data.permalink = permalink
 
       delete files[file]
       files[out] = data

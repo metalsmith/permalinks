@@ -256,19 +256,9 @@ describe('@metalsmith/permalinks', () => {
   // Tests comparing build output against expected files
   fixtures.forEach(({ message, options, folder }) => {
     const basePath = path.join(fixturesBase, folder)
-    it(message, (done) => {
-      Metalsmith(basePath)
-        .env('DEBUG', process.env.DEBUG)
-        .use(permalinks(options))
-        .build((err) => {
-          if (err) return done(err)
-          try {
-            equal(path.join(basePath, 'build'), path.join(basePath, 'expected'))
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
+    it(message, async () => {
+      await Metalsmith(basePath).env('DEBUG', process.env.DEBUG).use(permalinks(options)).build()
+      equal(path.join(basePath, 'build'), path.join(basePath, 'expected'))
     })
   })
 
